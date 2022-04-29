@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creating and Modifying Distributed Tables (DDL) &mdash; Canopy 10.2 documentation</title>
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/citus.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/flexboxgrid.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ingesting, Modifying Data (DML)" href="reference_dml.html" />
+    <link rel="prev" title="SQL Reference" href="reference.html" />
+  
+  <script>
+    /*
+      Global variable shared with cookie consent dialog code.
+      This is to use its value uniformly throughout the page.
+    */
+    window.g_cookieConsentId = 'CitusCookieConsentCorner';
+
+    if (document.cookie.indexOf(window.g_cookieConsentId) == -1) {
+      window.YETT_BLACKLIST = [
+        /munchkin\.marketo\.net/,
+        /sjs\.bizographics\.com/,
+        /doubleclick\.net/,
+        /cdn\.heapanalytics\.com/,
+      ];
+    } else {
+      console.log("Cookies already accepted");
+      window.YETT_BLACKLIST = [ ];
+    }
+  </script>
+  <script src='https://unpkg.com/yett'></script>
+
+   
+
+  
+  <script>
+    // Read The Docs is responsible for loading GA by
+    // injecting a script into all pages. The function
+    // below assumes that this has happened.
+    window.trackOutboundLink = function(url) {
+      if (typeof(ga) == 'function') {
+        ga('send', 'event', 'outbound', 'click', url, {
+          'transport': 'beacon',
+          'hitCallback': function(){document.location = url;}
+        });
+        // cancel navigation due to click, allow the hitCallback to
+        // navigate to the next page after ga() has registered event
+        return false;
+      } else {
+        console.log("trackOutboundLink: Unable to access ga()");
+        // ga() was a no-go so allow navigation to proceed
+        return true;
+      }
+    };
+  </script>
+
+  
+  <meta name="google-site-verification" content="v8MtCUC2nV2dO-4CSGb5flD1MyPKJvw7wBDOYRwBadw" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+  
+  
+
+  
+  <meta property="og:image" content="https://docs.citusdata.com/en/stable/_images/citus-docs-og-logo.png" />
+  <meta property="og:title" content="Creating and Modifying Distributed Tables (DDL) - Canopy 10.2 documentation" />
+  <meta property="og:description" content="Docs for the Citus extension to Postgres. Citus distributes your data &amp; queries across multiple nodes in a cluster, so your database can scale and your queries are fast." />
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+  <a class="skiplink" href="#maincontent">Skip to main content ></a>
+  <a href="https://citusdata.com" class="homepage">
+    <img src=../_images/logo.png class="logo" alt="Citus Data logo" />
+  </a>
+
+  
+            <a href="../index.html" class="icon icon-home"> Canopy
+          </a>
+              <div class="version">
+                10.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" id="main-search" autocomplete="off" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Main">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html">What is Canopy?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#how-far-can-canopy-scale">How Far Can Canopy Scale?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html#when-to-use-canopy">When to Use Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#multi-tenant-database">Multi-Tenant Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#real-time-analytics">Real-Time Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#considerations-for-use">Considerations for Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#when-canopy-is-inappropriate">When Canopy is Inappropriate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/tutorials.html">Quick Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html">Real-time Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/single_node.html">Single-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/single_node_rhel.html">CentOS or Red Hat</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/multi_node.html">Multi-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/multi_node_rhel.html">CentOS or Red Hat</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-all-nodes">Steps to be executed on all nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-the-coordinator-node">Steps to be executed on the coordinator node</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use-Case Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#let-s-make-an-app-ad-analytics">Let’s Make an App – Ad Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-the-relational-data-model">Scaling the Relational Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#preparing-tables-and-ingesting-data">Preparing Tables and Ingesting Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/multi_tenant.html#try-it-yourself">Try it Yourself</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#integrating-applications">Integrating Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#sharing-data-between-tenants">Sharing Data Between Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#online-changes-to-the-schema">Online Changes to the Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#when-data-differs-across-tenants">When Data Differs Across Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-hardware-resources">Scaling Hardware Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#where-to-go-from-here">Where to Go From Here</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/realtime_analytics.html">Real-Time Dashboards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#data-model">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#rollups">Rollups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#expiring-old-data">Expiring Old Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#approximate-distinct-counts">Approximate Distinct Counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#unstructured-data-with-jsonb">Unstructured Data with JSONB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/timeseries.html">Timeseries Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#scaling-timeseries-data-on-canopy">Scaling Timeseries Data on Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#automating-partition-creation">Automating Partition Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#archiving-with-columnar-storage">Archiving with Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/timeseries.html#archiving-a-row-partition-to-columnar-storage">Archiving a Row Partition to Columnar Storage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#nodes">Nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#coordinator-and-workers">Coordinator and Workers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#distributed-data">Distributed Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#table-types">Table Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-1-distributed-tables">Type 1: Distributed Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-2-reference-tables">Type 2: Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-3-local-tables">Type 3: Local Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#shards">Shards</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#shard-placements">Shard Placements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#co-location">Co-Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#parallelism">Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#query-execution">Query Execution</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Develop</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="app_type.html">Determining Application Type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app_type.html#at-a-glance">At a Glance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app_type.html#examples-and-characteristics">Examples and Characteristics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sharding/data_modeling.html">Choosing Distribution Column</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#multi-tenant-apps">Multi-Tenant Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#real-time-apps">Real-Time Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id1">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#timeseries-data">Timeseries Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id2">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#table-co-location">Table Co-Location</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#data-co-location-in-canopy-for-hash-distributed-tables">Data co-location in Canopy for hash-distributed tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#a-practical-example-of-co-location">A practical example of co-location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#using-regular-lightdb-tables">Using Regular LightDB Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-id">Distributing tables by ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-tenant">Distributing tables by tenant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#co-location-means-better-feature-support">Co-location means better feature support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#query-performance">Query Performance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating an Existing App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_schema.html">Identify Distribution Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#pick-distribution-key">Pick distribution key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#identify-types-of-tables">Identify types of tables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_schema.html#prepare-source-tables-for-migration">Prepare Source Tables for Migration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#add-distribution-keys">Add distribution keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#backfill-newly-created-columns">Backfill newly created columns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_query.html">Prepare Application for Canopy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#set-up-development-canopy-cluster">Set up Development Canopy Cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_query.html#include-distribution-column-in-keys">Include distribution column in keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#add-distribution-key-to-queries">Add distribution key to queries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_ror.html">Ruby on Rails</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_django.html">Django</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_asp.html">ASP.NET</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_query.html#other-sql-principles">Other (SQL Principles)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#enable-secure-connections">Enable Secure Connections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#check-for-cross-node-traffic">Check for cross-node traffic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_data.html">Migrate Production Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_data_small.html">Small Database Migration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">SQL Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating and Modifying Distributed Tables (DDL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-and-distributing-tables">Creating And Distributing Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reference-tables">Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distributing-coordinator-data">Distributing Coordinator Data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#co-locating-tables">Co-Locating Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-tables">Modifying Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-modifying-columns">Adding/Modifying Columns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-removing-constraints">Adding/Removing Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-not-valid-constraints">Using NOT VALID Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-removing-indices">Adding/Removing Indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#manual-modification">Manual Modification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_dml.html">Ingesting, Modifying Data (DML)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#inserting-data">Inserting Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_dml.html#from-select-clause-distributed-rollups">“From Select” Clause (Distributed Rollups)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_dml.html#copy-command-bulk-load">COPY Command (Bulk load)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_dml.html#caching-aggregations-with-rollups">Caching Aggregations with Rollups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#updates-and-deletion">Updates and Deletion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#maximizing-write-performance">Maximizing Write Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_sql.html">Querying Distributed Tables (SQL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#aggregate-functions">Aggregate Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#count-distinct-aggregates">Count (Distinct) Aggregates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#estimating-top-n-items">Estimating Top N Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#percentile-calculations">Percentile Calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#limit-pushdown">Limit Pushdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#views-on-distributed-tables">Views on Distributed Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#joins">Joins</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#co-located-joins">Co-located joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#reference-table-joins">Reference table joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#repartition-joins">Repartition joins</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_processing.html">Query Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#distributed-query-planner">Distributed Query Planner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#distributed-query-executor">Distributed Query Executor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_processing.html#subquery-cte-push-pull-execution">Subquery/CTE Push-Pull Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#lightdb-planner-and-executor">LightDB planner and executor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_propagation.html">Manual Query Propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-workers">Running on all Workers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-shards">Running on all Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-placements">Running on all Placements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_workarounds.html">SQL Support and Workarounds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_workarounds.html#workarounds">Workarounds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_workarounds.html#work-around-limitations-using-ctes">Work around limitations using CTEs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_workarounds.html#temp-tables-the-workaround-of-last-resort">Temp Tables: the Workaround of Last Resort</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Canopy API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_udf.html">Canopy Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#table-and-shard-ddl">Table and Shard DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-distributed-table">create_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#truncate-local-data-after-distributing-table">truncate_local_data_after_distributing_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#undistribute-table">undistribute_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-distributed-table">alter_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-table-set-access-method">alter_table_set_access_method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#remove-local-tables-from-metadata">remove_local_tables_from_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-reference-table">create_reference_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#mark-tables-colocated">mark_tables_colocated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#update-distributed-table-colocation">update_distributed_table_colocation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-distributed-function">create_distributed_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-create-empty-shard">master_create_empty_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-columnar-table-set">alter_columnar_table_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-time-partitions">create_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#drop-old-time-partitions">drop_old_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-old-partitions-set-access-method">alter_old_partitions_set_access_method</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#table-and-shard-dml">Table and Shard DML</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-append-table-to-shard">master_append_table_to_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-apply-delete-command">master_apply_delete_command</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#metadata-configuration-information">Metadata / Configuration Information</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-node">canopy_add_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-update-node">canopy_update_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-node-property">canopy_set_node_property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-inactive-node">canopy_add_inactive_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-activate-node">canopy_activate_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-disable-node">canopy_disable_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-secondary-node">canopy_add_secondary_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-remove-node">canopy_remove_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-get-active-worker-nodes">canopy_get_active_worker_nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-coordinator-host">canopy_set_coordinator_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-get-table-metadata">master_get_table_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-shard-id-for-distribution-column">get_shard_id_for_distribution_column</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#column-to-column-name">column_to_column_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-relation-size">canopy_relation_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-table-size">canopy_table_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-total-relation-size">canopy_total_relation_size</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#cluster-management-and-repair-functions">Cluster Management And Repair Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-copy-shard-placement">canopy_copy_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-move-shard-placement">canopy_move_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#rebalance-table-shards">rebalance_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-rebalance-table-shards-plan">get_rebalance_table_shards_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-rebalance-progress">get_rebalance_progress</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-rebalance-strategy">canopy_add_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-default-rebalance-strategy">canopy_set_default_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-remote-connection-stats">canopy_remote_connection_stats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-drain-node">canopy_drain_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#replicate-table-shards">replicate_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-create-restore-point">canopy_create_restore_point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_metadata.html">Canopy Tables and Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_metadata.html#coordinator-metadata">Coordinator Metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#partition-table">Partition table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#shard-table">Shard table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#shard-information-view">Shard information view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#shard-placement-table">Shard placement table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#worker-node-table">Worker node table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#distributed-object-table">Distributed object table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#canopy-tables-view">Canopy tables view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#time-partitions-view">Time partitions view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#co-location-group-table">Co-location group table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#rebalancer-strategy-table">Rebalancer strategy table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_metadata.html#distributed-query-activity">Distributed Query Activity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_guc.html">Configuration Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#general-configuration">General configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-max-worker-nodes-tracked-integer">canopy.max_worker_nodes_tracked (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-use-secondary-nodes-enum">canopy.use_secondary_nodes (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-cluster-name-text">canopy.cluster_name (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-version-checks-boolean">canopy.enable_version_checks (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-log-distributed-deadlock-detection-boolean">canopy.log_distributed_deadlock_detection (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-distributed-deadlock-detection-factor-floating-point">canopy.distributed_deadlock_detection_factor (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-node-connection-timeout-integer">canopy.node_connection_timeout (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-node-conninfo-text">canopy.node_conninfo (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-local-hostname-text">canopy.local_hostname (text)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-multi-shard-commit-protocol-enum">canopy.multi_shard_commit_protocol (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-replication-factor-integer">canopy.shard_replication_factor (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-count-integer">canopy.shard_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-max-size-integer">canopy.shard_max_size (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-replicate-reference-tables-on-activate-boolean">canopy.replicate_reference_tables_on_activate (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#planner-configuration">Planner Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-local-table-join-policy-enum">canopy.local_table_join_policy (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-limit-clause-row-fetch-count-integer">canopy.limit_clause_row_fetch_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-count-distinct-error-rate-floating-point">canopy.count_distinct_error_rate (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-task-assignment-policy-enum">canopy.task_assignment_policy (enum)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#intermediate-data-transfer">Intermediate Data Transfer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-binary-worker-copy-format-boolean">canopy.binary_worker_copy_format (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-max-intermediate-result-size-integer">canopy.max_intermediate_result_size (integer)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#ddl">DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-ddl-propagation-boolean">canopy.enable_ddl_propagation (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-local-reference-table-foreign-keys-boolean">canopy.enable_local_reference_table_foreign_keys (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#executor-configuration">Executor Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#explain-output">Explain output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="append.html">Append Distribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="append.html#creating-and-distributing-tables">Creating and Distributing Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#expiring-data">Expiring Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#deleting-data">Deleting Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="append.html#bulk-load-using-copy">Bulk load using \copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#incremental-loads-by-appending-to-existing-shards">Incremental loads by appending to existing shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#increasing-data-loading-performance">Increasing data loading performance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#scaling-data-ingestion">Scaling Data Ingestion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="append.html#coordinator-node-bulk-ingestion-100k-s-200k-s">Coordinator Node Bulk Ingestion (100k/s-200k/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#worker-node-bulk-ingestion-100k-s-1m-s">Worker Node Bulk Ingestion (100k/s-1M/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#pre-processing-data-in-canopy">Pre-processing Data in Canopy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">External Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#ingesting-data-from-kafka">Ingesting Data from Kafka</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="integrations.html#caveats">Caveats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#ingesting-data-from-spark">Ingesting Data from Spark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#business-intelligence-with-tableau">Business Intelligence with Tableau</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Administer</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/cluster_management.html">Cluster Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#choosing-cluster-size">Choosing Cluster Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#shard-count">Shard Count</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../admin_guide/cluster_management.html#multi-tenant-saas-use-case">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../admin_guide/cluster_management.html#real-time-analytics-use-case">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#initial-hardware-size">Initial Hardware Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#id2">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#id3">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#scaling-the-cluster">Scaling the cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#add-a-worker">Add a worker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#rebalance-shards">Rebalance Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#adding-a-coordinator">Adding a coordinator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#dealing-with-node-failures">Dealing With Node Failures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#worker-node-failures">Worker Node Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#coordinator-node-failures">Coordinator Node Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#resource-conservation">Resource Conservation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#limiting-long-running-queries">Limiting Long-Running Queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#security">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#connection-management">Connection Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#setup-certificate-authority-signed-certificates">Setup Certificate Authority signed certificates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#increasing-worker-security">Increasing Worker Security</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#lightdb-extensions">LightDB extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#creating-a-new-database">Creating a New Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/table_management.html">Table Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#determining-table-and-relation-size">Determining Table and Relation Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#vacuuming-distributed-tables">Vacuuming Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#analyzing-distributed-tables">Analyzing Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#columnar-storage">Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#measuring-compression">Measuring compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#gotchas">Gotchas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshoot</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../performance/performance_tuning.html">Query Performance Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#table-distribution-and-shards">Table Distribution and Shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#lightdb-tuning">LightDB tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-performance">Scaling Out Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#distributed-query-performance-tuning">Distributed Query Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#general">General</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#subquery-cte-network-overhead">Subquery/CTE Network Overhead</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#advanced">Advanced</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#connection-management">Connection Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#task-assignment-policy">Task Assignment Policy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#intermediate-data-transfer-format">Intermediate Data Transfer Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#binary-protocol">Binary protocol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-data-ingestion">Scaling Out Data Ingestion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#real-time-insert-and-updates">Real-time Insert and Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-throughput">Insert Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#update-throughput">Update Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-throughput-checklist">Insert and Update: Throughput Checklist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-latency">Insert and Update: Latency</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#staging-data-temporarily">Staging Data Temporarily</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#bulk-copy-250k-2m-s">Bulk Copy (250K - 2M/s)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/diagnostic_queries.html">Useful Diagnostic Queries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#finding-which-shard-contains-data-for-a-specific-tenant">Finding which shard contains data for a specific tenant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#finding-the-distribution-column-for-a-table">Finding the distribution column for a table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#detecting-locks">Detecting locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#querying-the-size-of-your-shards">Querying the size of your shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#querying-the-size-of-all-distributed-tables">Querying the size of all distributed tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#determining-replication-factor-per-table">Determining Replication Factor per Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#identifying-unused-indices">Identifying unused indices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#monitoring-client-connection-count">Monitoring client connection count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#viewing-system-queries">Viewing system queries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#active-queries">Active queries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#why-are-queries-waiting">Why are queries waiting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#index-hit-rate">Index hit rate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#cache-hit-rate">Cache hit rate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/common_errors.html">Common Error Messages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-receive-query-results">Could not receive query results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#resolution">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#canceling-the-transaction-since-it-was-involved-in-a-distributed-deadlock">Canceling the transaction since it was involved in a distributed deadlock</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id1">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-server-cannot-assign-requested-address">Could not connect to server: Cannot assign requested address</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id2">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#ssl-error-certificate-verify-failed">SSL error: certificate verify failed</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id3">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-any-active-placements">Could not connect to any active placements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id4">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#remaining-connection-slots-are-reserved-for-non-replication-superuser-connections">Remaining connection slots are reserved for non-replication superuser connections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id5">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#pgbouncer-cannot-connect-to-server">PgBouncer cannot connect to server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id6">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#cannot-create-uniqueness-constraint">Cannot create uniqueness constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id7">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#function-create-distributed-table-does-not-exist">Function create_distributed_table does not exist</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id8">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#stable-functions-used-in-update-queries-cannot-be-called-with-column-references">STABLE functions used in UPDATE queries cannot be called with column references</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id9">Resolution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq/faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-create-primary-keys-on-distributed-tables">Can I create primary keys on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-add-nodes-to-an-existing-canopy-cluster">How do I add nodes to an existing Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failure-of-a-worker-node">How does Canopy handle failure of a worker node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failover-of-the-coordinator-node">How does Canopy handle failover of the coordinator node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#are-there-any-lightdb-features-not-supported-by-canopy">Are there any LightDB features not supported by Canopy?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-choose-the-shard-count-when-i-hash-partition-my-data">How do I choose the shard count when I hash-partition my data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-change-the-shard-count-for-a-hash-partitioned-table">How do I change the shard count for a hash partitioned table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-support-count-distinct-queries">How does canopy support count(distinct) queries?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#in-which-situations-are-uniqueness-constraints-supported-on-distributed-tables">In which situations are uniqueness constraints supported on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-create-database-roles-functions-extensions-etc-in-a-canopy-cluster">How do I create database roles, functions, extensions etc in a Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#what-if-a-worker-node-s-address-changes">What if a worker node’s address changes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#which-shard-contains-data-for-a-particular-tenant">Which shard contains data for a particular tenant?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#i-forgot-the-distribution-column-of-a-table-how-do-i-find-it">I forgot the distribution column of a table, how do I find it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-distribute-a-table-by-multiple-keys">Can I distribute a table by multiple keys?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-does-pg-relation-size-report-zero-bytes-for-a-distributed-table">Why does pg_relation_size report zero bytes for a distributed table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-am-i-seeing-an-error-about-max-intermediate-result-size">Why am I seeing an error about max_intermediate_result_size?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-shard-by-schema-on-canopy-for-multi-tenant-applications">Can I shard by schema on Canopy for multi-tenant applications?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Articles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../articles/index.html">Related Articles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../articles/parallel_indexing.html">LightDB Parallel Indexing in Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/aggregation.html">Real-time Event Aggregation at Scale Using LightDB with Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/outer_joins.html">How Distributed Outer Joins on LightDB with Canopy Work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/outer_joins.html#distributed-outer-joins-with-canopy">Distributed Outer Joins with Canopy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/designing_saas.html">Designing your SaaS Database for Scale with LightDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/sharding_mt_app.html">Sharding a Multi-Tenant App with LightDB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#tenancy">Tenancy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#multi-tenancy-and-co-location-a-perfect-pair">Multi-tenancy and co-location, a perfect pair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#in-conclusion">In conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/semi_structured_data.html">Sharding LightDB with Semi-Structured Data and Its Performance Implications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#one-large-table-without-joins">One large table, without joins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#enter-canopy">Enter Canopy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#the-query-workload">The query workload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#every-distribution-has-its-thorns">Every distribution has its thorns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/faceted_search.html">Scalable Real-time Product Search using LightDB with Canopy</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" aria-label="Top" >
+          <button data-toggle="wy-nav-top" class="fa fa-bars"></button>
+          <a href="../index.html">Canopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+<div role="navigation" aria-label="Breadcrumbs">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Documentation home page"></a> &raquo;</li>
+          <li><a href="reference.html">SQL Reference</a> &raquo;</li>
+      <li>Creating and Modifying Distributed Tables (DDL)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div id="maincontent" />
+
+  
+  <div class="section" id="creating-and-modifying-distributed-tables-ddl">
+<span id="ddl"></span><h1>Creating and Modifying Distributed Tables (DDL)<a class="headerlink" href="#creating-and-modifying-distributed-tables-ddl" title="Permalink to this headline"></a></h1>
+<div class="section" id="creating-and-distributing-tables">
+<h2>Creating And Distributing Tables<a class="headerlink" href="#creating-and-distributing-tables" title="Permalink to this headline"></a></h2>
+<p>To create a distributed table, you need to first define the table schema. To do so, you can define a table using the <a class="reference external" href="https://www.hs.net/lightdb/docs/html/sql-createtable.html">CREATE TABLE</a> statement in the same way as you would do with a regular LightDB table.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">github_events</span><span class="w"></span>
+<span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">event_id</span><span class="w"> </span><span class="nb">bigint</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">event_type</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">event_public</span><span class="w"> </span><span class="nb">boolean</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">repo_id</span><span class="w"> </span><span class="nb">bigint</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">payload</span><span class="w"> </span><span class="n">jsonb</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">repo</span><span class="w"> </span><span class="n">jsonb</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">actor</span><span class="w"> </span><span class="n">jsonb</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">org</span><span class="w"> </span><span class="n">jsonb</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">timestamp</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Next, you can use the create_distributed_table() function to specify the table
+distribution column and create the worker shards.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;github_events&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;repo_id&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This function informs Canopy that the github_events table should be distributed
+on the repo_id column (by hashing the column value). The function also creates
+shards on the worker nodes using the canopy.shard_count and
+canopy.shard_replication_factor configuration values.</p>
+<p>This example would create a total of canopy.shard_count number of shards where each
+shard owns a portion of a hash token space and gets replicated based on the
+default canopy.shard_replication_factor configuration value. The shard replicas
+created on the worker have the same table schema, index, and constraint
+definitions as the table on the coordinator. Once the replicas are created, this
+function saves all distributed metadata on the coordinator.</p>
+<p>Each created shard is assigned a unique shard id and all its replicas have the same shard id. Each shard is represented on the worker node as a regular LightDB table with name ‘tablename_shardid’ where tablename is the name of the distributed table and shardid is the unique id assigned to that shard. You can connect to the worker lightdb instances to view or run commands on individual shards.</p>
+<p>You are now ready to insert data into the distributed table and run queries on it. You can also learn more about the UDF used in this section in the <a class="reference internal" href="api_udf.html#user-defined-functions"><span class="std std-ref">Canopy Utility Functions</span></a> of our documentation.</p>
+<div class="section" id="reference-tables">
+<span id="id1"></span><h3>Reference Tables<a class="headerlink" href="#reference-tables" title="Permalink to this headline"></a></h3>
+<p>The above method distributes tables into multiple horizontal shards, but another possibility is distributing tables into a single shard and replicating the shard to every worker node. Tables distributed this way are called <em>reference tables.</em> They are used to store data that needs to be frequently accessed by multiple nodes in a cluster.</p>
+<p>Common candidates for reference tables include:</p>
+<ul class="simple">
+<li><p>Smaller tables which need to join with larger distributed tables.</p></li>
+<li><p>Tables in multi-tenant apps which lack a tenant id column or which aren’t associated with a tenant. (In some cases, to reduce migration effort, users might even choose to make reference tables out of tables associated with a tenant but which currently lack a tenant id.)</p></li>
+<li><p>Tables which need unique constraints across multiple columns and are small enough.</p></li>
+</ul>
+<p>For instance suppose a multi-tenant eCommerce site needs to calculate sales tax for transactions in any of its stores. Tax information isn’t specific to any tenant. It makes sense to consolidate it in a shared table. A US-centric reference table might look like this:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- a reference table</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">states</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">code</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">full_name</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">general_sales_tax</span><span class="w"> </span><span class="nb">numeric</span><span class="p">(</span><span class="mf">4</span><span class="p">,</span><span class="mf">3</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+
+<span class="c1">-- distribute it to all workers</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_reference_table</span><span class="p">(</span><span class="s1">&#39;states&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Now queries such as one calculating tax for a shopping cart can join on the <code class="code docutils literal notranslate"><span class="pre">states</span></code> table with no network overhead, and can add a foreign key to the state code for better validation.</p>
+<p>In addition to distributing a table as a single replicated shard, the <code class="code docutils literal notranslate"><span class="pre">create_reference_table</span></code> UDF marks it as a reference table in the Canopy metadata tables. Canopy automatically performs two-phase commits (<a class="reference external" href="https://en.wikipedia.org/wiki/Two-phase_commit_protocol">2PC</a>) for modifications to tables marked this way, which provides strong consistency guarantees.</p>
+<p>If you have an existing distributed table, you can change it to
+a reference table by running:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">undistribute_table</span><span class="p">(</span><span class="s1">&#39;table_name&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_reference_table</span><span class="p">(</span><span class="s1">&#39;table_name&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>For another example of using reference tables in a multi-tenant application, see <a class="reference internal" href="../use_cases/multi_tenant.html#mt-ref-tables"><span class="std std-ref">Sharing Data Between Tenants</span></a>.</p>
+</div>
+<div class="section" id="distributing-coordinator-data">
+<h3>Distributing Coordinator Data<a class="headerlink" href="#distributing-coordinator-data" title="Permalink to this headline"></a></h3>
+<p>If an existing LightDB database is converted into the coordinator node for a Canopy cluster, the data in its tables can be distributed efficiently and with minimal interruption to an application.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">create_distributed_table</span></code> function described earlier works on both empty and non-empty tables, and for the latter it automatically distributes table rows throughout the cluster. You will know if it does this by the presence of the message, “NOTICE:  Copying data from local table…” For example:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">series</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">1000000</span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;series&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;i&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="n">NOTICE</span><span class="p">:</span><span class="w">  </span><span class="n">Copying</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="k">local</span><span class="w"> </span><span class="k">table</span><span class="mf">...</span><span class="w"></span>
+<span class="n">NOTICE</span><span class="p">:</span><span class="w">  </span><span class="n">copying</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">completed</span><span class="w"></span>
+<span class="n">DETAIL</span><span class="p">:</span><span class="w">  </span><span class="n">The</span><span class="w"> </span><span class="k">local</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">visible</span><span class="p">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">still</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">disk</span><span class="mf">.</span><span class="w"></span>
+<span class="n">HINT</span><span class="p">:</span><span class="w">  </span><span class="k">To</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">local</span><span class="w"> </span><span class="k">data</span><span class="p">,</span><span class="w"> </span><span class="n">run</span><span class="p">:</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">truncate_local_data_after_distributing_table</span><span class="p">(</span><span class="s">$$public.series$$</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="n">create_distributed_table</span><span class="w"></span>
+<span class="w"> </span><span class="c1">--------------------------</span>
+
+<span class="w"> </span><span class="p">(</span><span class="mf">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Writes on the table are blocked while the data is migrated, and pending writes are handled as distributed queries once the function commits. (If the function fails then the queries become local again.) Reads can continue as normal and will become distributed queries once the function commits.</p>
+<p>When distributing tables A and B, where A has a foreign key to B, distribute the key destination table B first. Doing it in the wrong order will cause an error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERROR</span><span class="p">:</span>  <span class="n">cannot</span> <span class="n">create</span> <span class="n">foreign</span> <span class="n">key</span> <span class="n">constraint</span>
+<span class="n">DETAIL</span><span class="p">:</span>  <span class="n">Referenced</span> <span class="n">table</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">distributed</span> <span class="n">table</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">reference</span> <span class="n">table</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If it’s not possible to distribute in the correct order then drop the foreign keys, distribute the tables, and recreate the foreign keys.</p>
+<p>After the tables are distributed, use the <a class="reference internal" href="api_udf.html#truncate-local-data-after-distributing-table"><span class="std std-ref">truncate_local_data_after_distributing_table</span></a> function to remove local data. Leftover local data in distributed tables is inaccessible to Canopy queries, and can cause irrelevant constraint violations on the coordinator.</p>
+<p>When migrating data from an external database, such as from Amazon RDS to Canopy Cloud, first create the Canopy distributed tables via <code class="code docutils literal notranslate"><span class="pre">create_distributed_table</span></code>, then copy the data into the table. Copying into distributed tables avoids running out of space on the coordinator node.</p>
+</div>
+</div>
+<div class="section" id="co-locating-tables">
+<span id="colocation-groups"></span><h2>Co-Locating Tables<a class="headerlink" href="#co-locating-tables" title="Permalink to this headline"></a></h2>
+<p>Co-location is the practice of dividing data tactically, keeping related information on the same machines to enable efficient relational operations, while taking advantage of the horizontal scalability for the whole dataset. For more information and examples see <a class="reference internal" href="../sharding/data_modeling.html#colocation"><span class="std std-ref">Table Co-Location</span></a>.</p>
+<p>Tables are co-located in groups. To manually control a table’s co-location group assignment use the optional <code class="code docutils literal notranslate"><span class="pre">colocate_with</span></code> parameter of <code class="code docutils literal notranslate"><span class="pre">create_distributed_table</span></code>. If you don’t care about a table’s co-location then omit this parameter. It defaults to the value <code class="code docutils literal notranslate"><span class="pre">'default'</span></code>, which groups the table with any other default co-location table having the same distribution column type, shard count, and replication factor.
+If you want to break or update this implicit colocation, you can use <code class="docutils literal notranslate"><span class="pre">update_distributed_table_colocation()</span></code>.</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- these tables are implicitly co-located by using the same</span>
+<span class="c1">-- distribution column type and shard count with the default</span>
+<span class="c1">-- co-location group</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;some_int_col&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;other_int_col&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>When a new table is not related to others in its would-be implicit co-location group, specify <code class="code docutils literal notranslate"><span class="pre">colocated_with</span> <span class="pre">=&gt;</span> <span class="pre">'none'</span></code>.</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- not co-located with other tables</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;foo&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">colocate_with</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;none&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Splitting unrelated tables into their own co-location groups will improve <a class="reference internal" href="../admin_guide/cluster_management.html#shard-rebalancing"><span class="std std-ref">shard rebalancing</span></a> performance, because shards in the same group have to be moved together.</p>
+<p>When tables are indeed related (for instance when they will be joined), it can make sense to explicitly co-locate them. The gains of appropriate co-location are more important than any rebalancing overhead.</p>
+<p>To explicitly co-locate multiple tables, distribute one and then put the others into its co-location group. For example:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- distribute stores</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;stores&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;store_id&#39;</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">-- add to the same group as stores</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;orders&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;store_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">colocate_with</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;stores&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;products&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;store_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">colocate_with</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s1">&#39;stores&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Information about co-location groups is stored in the <a class="reference internal" href="api_metadata.html#colocation-group-table"><span class="std std-ref">pg_dist_colocation</span></a> table, while <a class="reference internal" href="api_metadata.html#partition-table"><span class="std std-ref">pg_dist_partition</span></a> reveals which tables are assigned to which groups.</p>
+</div>
+<div class="section" id="dropping-tables">
+<h2>Dropping Tables<a class="headerlink" href="#dropping-tables" title="Permalink to this headline"></a></h2>
+<p>You can use the standard LightDB DROP TABLE command to remove your distributed tables. As with regular tables, DROP TABLE removes any indexes, rules, triggers, and constraints that exist for the target table. In addition, it also drops the shards on the worker nodes and cleans up their metadata.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">github_events</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-tables">
+<span id="ddl-prop-support"></span><h2>Modifying Tables<a class="headerlink" href="#modifying-tables" title="Permalink to this headline"></a></h2>
+<p>Canopy automatically propagates many kinds of DDL statements, which means that modifying a distributed table on the coordinator node will update shards on the workers too. Other DDL statements require manual propagation, and certain others are prohibited such as those which would modify a distribution column. Attempting to run DDL that is ineligible for automatic propagation will raise an error and leave tables on the coordinator node unchanged.</p>
+<p>Here is a reference of the categories of DDL statements which propagate. Note that automatic propagation can be enabled or disabled with a <a class="reference internal" href="api_guc.html#enable-ddl-prop"><span class="std std-ref">configuration parameter</span></a>.</p>
+<div class="section" id="adding-modifying-columns">
+<h3>Adding/Modifying Columns<a class="headerlink" href="#adding-modifying-columns" title="Permalink to this headline"></a></h3>
+<p>Canopy propagates most <a class="reference external" href="https://www.hs.net/lightdb/docs/html/ddl-alter.html">ALTER TABLE</a> commands automatically. Adding columns or changing their default values work as they would in a single-machine LightDB database:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Adding a column</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">-- Changing default value</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mf">7.77</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Significant changes to an existing column like renaming it or changing its data type are fine too. However, the data type of the <a class="reference internal" href="../sharding/data_modeling.html#distributed-data-modeling"><span class="std std-ref">distribution column</span></a> cannot be altered. This column determines how table data distributes through the Canopy cluster, and modifying its data type would require moving the data.</p>
+<p>Attempting to do so causes an error:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- assuming store_id is the distribution column</span>
+<span class="c1">-- for products, and that it has type integer</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">products</span><span class="w"></span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">store_id</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span><span class="w"></span>
+
+<span class="cm">/*</span>
+<span class="cm">ERROR:  cannot execute ALTER TABLE command involving partition column</span>
+<span class="cm">*/</span><span class="w"></span>
+</pre></div>
+</div>
+<p>As a workaround, you can consider <a class="reference internal" href="api_udf.html#alter-distributed-table"><span class="std std-ref">changing the distribution column</span></a>, updating it, and changing it back.</p>
+</div>
+<div class="section" id="adding-removing-constraints">
+<h3>Adding/Removing Constraints<a class="headerlink" href="#adding-removing-constraints" title="Permalink to this headline"></a></h3>
+<p>Using Canopy allows you to continue to enjoy the safety of a relational database, including database constraints (see the LightDB <a class="reference external" href="https://www.hs.net/lightdb/docs/html/ddl-constraints.html">docs</a>). Due to the nature of distributed systems, Canopy will not cross-reference uniqueness constraints or referential integrity between worker nodes.</p>
+<p>To set up a foreign key between colocated distributed tables, always include the distribution column in the key. This may involve making the key compound.</p>
+<p>Foreign keys may be created in these situations:</p>
+<ul class="simple">
+<li><p>between two local (non-distributed) tables,</p></li>
+<li><p>between two reference tables,</p></li>
+<li><p>between reference tables and local tables (by default enabled, via <a class="reference internal" href="api_guc.html#enable-local-ref-fkeys"><span class="std std-ref">canopy.enable_local_reference_table_foreign_keys (boolean)</span></a>),</p></li>
+<li><p>between two <a class="reference internal" href="../sharding/data_modeling.html#colocation"><span class="std std-ref">colocated</span></a> distributed tables when the key includes the distribution column, or</p></li>
+<li><p>as a distributed table referencing a <a class="reference internal" href="#reference-tables"><span class="std std-ref">reference table</span></a></p></li>
+</ul>
+<p>Foreign keys from reference tables to distributed tables are not supported.</p>
+<p>Canopy supports all <a class="reference external" href="https://www.hs.net/lightdb/docs/html/ddl-constraints.html#DDL-CONSTRAINTS-FK">referential actions</a>
+on foreign keys from local to reference tables, but does not support support
+<code class="docutils literal notranslate"><span class="pre">ON</span> <span class="pre">DELETE/UPDATE</span> <span class="pre">CASCADE</span></code> in the reverse direction (reference to local).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Primary keys and uniqueness constraints must include the distribution column. Adding them to a non-distribution column will generate an error (see <a class="reference internal" href="../reference/common_errors.html#non-distribution-uniqueness"><span class="std std-ref">Cannot create uniqueness constraint</span></a>).</p>
+</div>
+<p>This example shows how to create primary and foreign keys on distributed tables:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">--</span>
+<span class="c1">-- Adding a primary key</span>
+<span class="c1">-- --------------------</span>
+
+<span class="c1">-- We&#39;ll distribute these tables on the account_id. The ads and clicks</span>
+<span class="c1">-- tables must use compound keys that include account_id.</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w"></span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w"></span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">clicks</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">-- Next distribute the tables</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;accounts&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;id&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;ads&#39;</span><span class="p">,</span><span class="w">      </span><span class="s1">&#39;account_id&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;clicks&#39;</span><span class="p">,</span><span class="w">   </span><span class="s1">&#39;account_id&#39;</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">--</span>
+<span class="c1">-- Adding foreign keys</span>
+<span class="c1">-- -------------------</span>
+
+<span class="c1">-- Note that this can happen before or after distribution, as long as</span>
+<span class="c1">-- there exists a uniqueness constraint on the target column(s) which</span>
+<span class="c1">-- can only be enforced before distribution.</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">ads_account_fk</span><span class="w"></span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w"></span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">clicks</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">clicks_ad_fk</span><span class="w"></span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span><span class="w"> </span><span class="n">ad_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Similarly, include the distribution column in uniqueness constraints:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Suppose we want every ad to use a unique image. Notice we can</span>
+<span class="c1">-- enforce it only per account when we distribute by account id.</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">ads_unique_image</span><span class="w"></span>
+<span class="w">  </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span><span class="w"> </span><span class="n">image_url</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Not-null constraints can be applied to any column (distribution or not) because they require no lookups between workers.</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ads</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">image_url</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-not-valid-constraints">
+<h3>Using NOT VALID Constraints<a class="headerlink" href="#using-not-valid-constraints" title="Permalink to this headline"></a></h3>
+<p>In some situations it can be useful to enforce constraints for new rows, while allowing existing non-conforming rows to remain unchanged. Canopy supports this feature for CHECK constraints and foreign keys, using LightDB’s “NOT VALID” constraint designation.</p>
+<p>For example, consider an application which stores user profiles in a <a class="reference internal" href="#reference-tables"><span class="std std-ref">reference table</span></a>.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- we&#39;re using the &quot;text&quot; column type here, but a real application</span>
+<span class="c1">-- might use &quot;citext&quot; which is available in a lightdb contrib module</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_reference_table</span><span class="p">(</span><span class="s1">&#39;users&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In the course of time imagine that a few non-addresses get into the table.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">VALUES</span><span class="w"></span>
+<span class="w">   </span><span class="p">(</span><span class="s1">&#39;foo@example.com&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;hacker12@aol.com&#39;</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;lol&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We would like to validate the addresses, but LightDB does not ordinarily allow us to add a CHECK constraint that fails for existing rows. However, it <em>does</em> allow a constraint marked not valid:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"></span>
+<span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">syntactic_email</span><span class="w"></span>
+<span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="w"> </span><span class="o">~</span><span class="w"></span>
+<span class="w">   </span><span class="s1">&#39;^[a-zA-Z0-9.!#$%&amp;&#39;&#39;*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$&#39;</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">VALID</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This succeeds, and new rows are protected.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;fake&#39;</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/*</span>
+<span class="cm">ERROR:  new row for relation &quot;users_102010&quot; violates</span>
+<span class="cm">        check constraint &quot;syntactic_email_102010&quot;</span>
+<span class="cm">DETAIL:  Failing row contains (fake).</span>
+<span class="cm">*/</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Later, during non-peak hours, a database administrator can attempt to fix the bad rows and re-validate the constraint.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- later, attempt to validate all rows</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"></span>
+<span class="k">VALIDATE</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">syntactic_email</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The LightDB documentation has more information about NOT VALID and VALIDATE CONSTRAINT in the <a class="reference external" href="https://www.hs.net/lightdb/docs/html/sql-altertable.html">ALTER TABLE</a> section.</p>
+</div>
+<div class="section" id="adding-removing-indices">
+<h3>Adding/Removing Indices<a class="headerlink" href="#adding-removing-indices" title="Permalink to this headline"></a></h3>
+<p>Canopy supports adding and removing <a class="reference external" href="https://www.hs.net/lightdb/docs/html/sql-createindex.html">indices</a>:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Adding an index</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">clicked_at_idx</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">clicks</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">BRIN</span><span class="w"> </span><span class="p">(</span><span class="n">clicked_at</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">-- Removing an index</span>
+
+<span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">clicked_at_idx</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Adding an index takes a write lock, which can be undesirable in a multi-tenant “system-of-record.” To minimize application downtime, create the index <a class="reference external" href="https://www.hs.net/lightdb/docs/html/sql-createindex.html#SQL-CREATEINDEX-CONCURRENTLY">concurrently</a> instead. This method requires more total work than a standard index build and takes significantly longer to complete. However, since it allows normal operations to continue while the index is built, this method is useful for adding new indexes in a production environment.</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Adding an index without locking table writes</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">CONCURRENTLY</span><span class="w"> </span><span class="n">clicked_at_idx</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">clicks</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">BRIN</span><span class="w"> </span><span class="p">(</span><span class="n">clicked_at</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="manual-modification">
+<h3>Manual Modification<a class="headerlink" href="#manual-modification" title="Permalink to this headline"></a></h3>
+<p>Currently other DDL commands are not auto-propagated, however, you can propagate the changes manually. See <a class="reference internal" href="reference_propagation.html#manual-prop"><span class="std std-ref">Manual Query Propagation</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+
+
+           </div>
+          </div>
+        </div>
+        <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="reference.html" class="btn btn-neutral float-left" title="SQL Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference_dml.html" class="btn btn-neutral float-right" title="Ingesting, Modifying Data (DML)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Hundsun Technologies Inc.</p>
+  </div>
+
+   
+
+</footer>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-32858865-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-32858865-1', {
+          'anonymize_ip': false,
+      });
+    </script>
+   
+
+  
+  <script type="text/javascript">
+    window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+    heap.load("4002524638");
+  </script>
+
+  
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js'></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      /* Uses global window.g_cookieConsentId defined in the <head> */
+
+      var consentValue = 'Consented';
+
+      var clickConsent = function () {
+        if ($("#consentBox").is(":visible")) {
+          if (typeof(window.yett) == 'object' &&
+              typeof(window.yett.unblock) == 'function') {
+            window.yett.unblock();
+          } else {
+            console.log("clickConsent: Unable to access window.yett.unblock()");
+          }
+          // "slideUp" means "hide," it is not a direction of movement
+          $("#consentBox").slideUp("linear");
+          $.cookie(window.g_cookieConsentId, consentValue, {
+            expires: 365,
+            path: '/'
+          });
+          if (typeof(ga) == 'function') {
+            ga('set', 'allowAdFeatures', true);
+            ga('send', 'event', 'cookie consent', 'accept', window.location.href);
+          } else {
+            console.log("clickConsent: Unable to access ga()");
+          }
+        }
+      };
+
+      // continuing to interact with the page consents to cookies
+      $("a:not(#cookiesLink), button, iframe, input, [data-toggle*='wy-nav-top'], [data-toggle*='rst-current-version']").on(
+        "click", clickConsent
+      );
+
+      if ($.cookie(window.g_cookieConsentId) != consentValue) {
+        // "slideDown" means "show," it's not a direction of movement
+        $("#consentBox").slideDown("linear");
+      };
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+.. _faq:
+
+Frequently Asked Questions
+##########################
+
+
+Can I create primary keys on distributed tables?
+------------------------------------------------
+
+Currently Canopy imposes primary key constraint only if the distribution column is a part of the primary key. This assures that the constraint needs to be checked only on one shard to ensure uniqueness.
+
+How do I add nodes to an existing Canopy cluster?
+-------------------------------------------------
+
+In Canopy you can add nodes manually by calling the :ref:`citus_add_node` UDF with the hostname (or IP address) and port number of the new node.
+
+Either way, after adding a node to an existing cluster it will not contain any data (shards). Canopy will start assigning any newly created shards to this node. To rebalance existing shards from the older nodes to the new node, Canopy provides a shard rebalancer utility. You can find more information in the :ref:`shard_rebalancing` section.
+
+How does Canopy handle failure of a worker node?
+------------------------------------------------
+
+Canopy supports two modes of replication, allowing it to tolerate worker-node failures. In the first model, we use LightDB's streaming replication to replicate the entire worker-node as-is. In the second model, Canopy can replicate data modification statements, thus replicating shards across different worker nodes. They have different advantages depending on the workload and use-case as discussed below:
+
+1. **LightDB streaming replication.** This option is best for heavy OLTP workloads. It replicates entire worker nodes by continuously streaming their WAL records to a standby. You can configure streaming replication on-premise yourself by consulting the `LightDB replication documentation <https://www.hs.net/lightdb/docs/html/warm-standby.html#STREAMING-REPLICATION>`.
+
+2. **Canopy shard replication.** This option is best suited for an append-only workload. Canopy replicates shards across different nodes by automatically replicating DML statements and managing consistency. If a node goes down, the coordinator node will continue to serve queries by routing the work to the replicas seamlessly. To enable shard replication simply set :code:`SET canopy.shard_replication_factor = 2;` (or higher) before distributing data to the cluster.
+
+How does Canopy handle failover of the coordinator node?
+--------------------------------------------------------
+
+As the Canopy coordinator node is similar to a standard LightDB server, regular LightDB synchronous replication and failover can be used to provide higher availability of the coordinator node. Many of our customers use synchronous replication in this way to add resilience against coordinator node failure. You can find more information about handling :ref:`coordinator_node_failures`.
+
+.. _unsupported:
+
+Are there any LightDB features not supported by Canopy?
+---------------------------------------------------------
+
+Since Canopy provides distributed functionality by extending LightDB, it uses the standard LightDB SQL constructs. The vast majority of queries are supported, even when they combine data across the network from multiple database nodes. This includes transactional semantics across nodes. Currently all SQL is supported except:
+
+* Correlated subqueries
+* Recursive CTEs
+* Table sample
+* SELECT … FOR UPDATE
+* Grouping sets
+
+What's more, Canopy has 100% SQL support for queries which access a single node in the database cluster. These queries are common, for instance, in multi-tenant applications where different nodes store different tenants (see :ref:`when_to_use_citus`).
+
+Remember that -- even with this extensive SQL coverage -- data modeling can have a significant impact on query performance. See the section on :ref:`citus_query_processing` for details on how Canopy executes queries.
+
+
+.. _faq_choose_shard_count:
+
+How do I choose the shard count when I hash-partition my data?
+--------------------------------------------------------------
+
+One of the choices when first distributing a table is its shard count. This setting can be set differently for each co-location group, and the optimal value depends on use-case. It is possible, but difficult, to change the count after cluster creation, so use these guidelines to choose the right size.
+
+In the :ref:`mt_blurb` use-case we recommend choosing between 32 - 128 shards.  For smaller workloads say <100GB, you could start with 32 shards and for larger workloads you could choose 64 or 128. This means that you have the leeway to scale from 32 to 128 worker machines.
+
+In the :ref:`rt_blurb` use-case, shard count should be related to the total number of cores on the workers. To ensure maximum parallelism, you should create enough shards on each node such that there is at least one shard per CPU core. We typically recommend creating a high number of initial shards, e.g. 2x or 4x the number of current CPU cores. This allows for future scaling if you add more workers and CPU cores.
+
+To choose a shard count for a table you wish to distribute, update the :code:`canopy.shard_count` variable. This affects subsequent calls to :ref:`create_distributed_table`. For example
+
+.. code-block:: postgres
+
+  SET canopy.shard_count = 64;
+  -- any tables distributed at this point will have
+  -- sixty-four shards
+
+For more guidance on this topic, see :ref:`production_sizing`.
+
+How do I change the shard count for a hash partitioned table?
+-------------------------------------------------------------
+
+Canopy has a function called :ref:`alter_distributed_table` that can change the shard count
+of a distributed table.
+
+How does canopy support count(distinct) queries?
+------------------------------------------------
+
+Canopy can evaluate count(distinct) aggregates both in and across worker nodes. When aggregating on a table's distribution column, Canopy can push the counting down inside worker nodes and total the results. Otherwise it can pull distinct rows to the coordinator and calculate there. If transferring data to the coordinator is too expensive, fast approximate counts are also available. More details in :ref:`count_distinct`.
+
+In which situations are uniqueness constraints supported on distributed tables?
+-------------------------------------------------------------------------------
+
+Canopy is able to enforce a primary key or uniqueness constraint only when the constrained columns contain the distribution column. In particular this means that if a single column constitutes the primary key then it has to be the distribution column as well.
+
+This restriction allows Canopy to localize a uniqueness check to a single shard and let LightDB on the worker node do the check efficiently.
+
+How do I create database roles, functions, extensions etc in a Canopy cluster?
+------------------------------------------------------------------------------
+
+Certain commands, when run on the coordinator node, do not get propagated to the workers:
+
+* ``CREATE ROLE/USER``
+* ``CREATE DATABASE``
+* ``ALTER … SET SCHEMA``
+* ``ALTER TABLE ALL IN TABLESPACE``
+* ``CREATE FUNCTION`` (use :ref:`create_distributed_function`)
+* ``CREATE TABLE`` (see :ref:`table_types`)
+
+For the other types of objects above, create them explicitly on all nodes. Canopy provides a function to execute queries across all workers:
+
+.. code-block:: postgresql
+
+  SELECT run_command_on_workers($cmd$
+    /* the command to run */
+    CREATE ROLE ...
+  $cmd$);
+
+Learn more in :ref:`manual_prop`. Also note that even after manually propagating CREATE DATABASE, Canopy must still be installed there. See :ref:`create_db`.
+
+In the future Canopy will automatically propagate more kinds of objects. The advantage of automatic propagation is that Canopy will automatically create a copy on any newly added worker nodes (see :ref:`pg_dist_object` for more about that.)
+
+What if a worker node's address changes?
+----------------------------------------
+
+If the hostname or IP address of a worker changes, you need to let the coordinator know using :ref:`citus_update_node`:
+
+.. code-block:: sql
+
+  -- update worker node metadata on the coordinator
+  -- (remember to replace 'old-address' and 'new-address'
+  --  with the actual values for your situation)
+
+  select canopy_update_node(nodeid, 'new-address', nodeport)
+    from pg_dist_node
+   where nodename = 'old-address';
+
+Until you execute this update, the coordinator will not be able to communicate with that worker for queries.
+
+Which shard contains data for a particular tenant?
+--------------------------------------------------
+
+Canopy provides UDFs and metadata tables to determine the mapping of a distribution column value to a particular shard, and the shard placement on a worker node. See :ref:`row_placements` for more details.
+
+I forgot the distribution column of a table, how do I find it?
+--------------------------------------------------------------
+
+The Canopy coordinator node metadata tables contain this information. See :ref:`finding_dist_col`.
+
+Can I distribute a table by multiple keys?
+------------------------------------------
+
+No, you must choose a single column per table as the distribution column. A common scenario where people want to distribute by two columns is for timeseries data. However, for this case we recommend using a hash distribution on a non-time column, and combining this with LightDB partitioning on the time column, as described in :ref:`distributing_hash_time`.
+
+Why does pg_relation_size report zero bytes for a distributed table?
+--------------------------------------------------------------------
+
+The data in distributed tables lives on the worker nodes (in shards), not on the coordinator. A true measure of distributed table size is obtained as a sum of shard sizes. Canopy provides helper functions to query this information. See :ref:`table_size` to learn more.
+
+Why am I seeing an error about max_intermediate_result_size?
+------------------------------------------------------------
+
+Canopy has to use more than one step to run some queries having subqueries or CTEs. Using :ref:`push_pull_execution`, it pushes subquery results to all worker nodes for use by the main query. If these results are too large, this might cause unacceptable network overhead, or even insufficient storage space on the coordinator node which accumulates and distributes the results.
+
+Canopy has a configurable setting, ``canopy.max_intermediate_result_size`` to specify a subquery result size threshold at which the query will be canceled. If you run into the error, it looks like:
+
+::
+
+  ERROR:  the intermediate result size exceeds canopy.max_intermediate_result_size (currently 1 GB)
+  DETAIL:  Canopy restricts the size of intermediate results of complex subqueries and CTEs to avoid accidentally pulling large result sets into once place.
+  HINT:  To run the current query, set canopy.max_intermediate_result_size to a higher value or -1 to disable.
+
+As the error message suggests, you can (cautiously) increase this limit by altering the variable:
+
+.. code-block:: sql
+
+  SET canopy.max_intermediate_result_size = '3GB';
+
+Can I shard by schema on Canopy for multi-tenant applications?
+--------------------------------------------------------------
+
+It turns out that while storing each tenant's information in a separate schema can be an attractive way to start when dealing with tenants, it leads to problems down the road. In Canopy we partition by the tenant_id, and a shard can contain data from several tenants.

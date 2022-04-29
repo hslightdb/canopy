@@ -1,0 +1,25 @@
+:orphan:
+
+.. _getting_started:
+
+Getting Started
+###############
+
+Welcome to the Canopy documentation! Canopy is an extension to LightDB that
+distributes your data and your queries across a database cluster, to give your
+application performance at any scale.
+
+.. note::
+
+  There are 3 big new capabilities in Canopy 10 that you should know about:
+
+  * Columnar storage
+  * Canopy on a single node
+  * shard rebalancer
+
+Here are some of the most useful getting started resources in docs:
+
+* :ref:`what_is_citus` - Canopy use-cases. Do they match yours?
+* :ref:`citus_concepts` - Parts and terminology.
+* :ref:`multi_tenant_tutorial` / :ref:`real_time_analytics_tutorial` - Short tutorials.
+* :ref:`use_cases_topic` - In-depth use-case guides and examples.

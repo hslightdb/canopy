@@ -1,0 +1,38 @@
+.. highlight:: bash
+
+.. _single_node_rhel:
+
+CentOS or Red Hat
+=================
+
+This section describes the steps needed to set up a single-node Canopy cluster on your own Linux machine.
+
+**1. Install LightDB 13.3-22.1 or above and initialize the cluster**
+
+Canopy is a LightDB extension. To tell LightDB to use this extension you'll need to add it to a configuration variable called ``shared_preload_libraries``.
+
+.. code-block:: sh
+
+  shared_preload_libraries = 'canopy'
+
+.. _post_install:
+
+**2. Start the database server**
+
+Start the instance of LightDB using lt_ctl. Above you added canopy to ``shared_preload_libraries``, that lets it hook into some deep parts of LightDB, swapping out the query planner and executor.  Here, we load the user-facing side of Canopy (such as the functions you'll soon call):
+
+.. code-block:: sh
+
+  CREATE EXTENSION canopy;
+
+**3. Verify that installation has succeeded**
+
+To verify that the installation has succeeded, and Canopy is installed:
+
+.. code-block:: sh
+
+  select canopy_version();
+
+You should see details of the Canopy extension.
+
+At this step, you have completed the installation process and are ready to use your Canopy cluster. To help you get started, we have a :ref:`tutorial<multi_tenant_tutorial>` which has instructions on setting up a Canopy cluster with sample data in minutes.

@@ -1,0 +1,359 @@
+.. _cluster_management:
+
+Cluster Management
+##################
+
+In this section, we discuss how you can add or remove nodes from your Canopy cluster and how you can deal with node failures.
+
+.. note::
+  To make moving shards across nodes or re-replicating shards on failed nodes easier, Canopy comes with a shard rebalancer extension. We discuss briefly about the functions provided by the shard rebalancer as and when relevant in the sections below. You can learn more about these functions, their arguments and usage, in the :ref:`cluster_management_functions` reference section.
+
+.. _production_sizing:
+
+Choosing Cluster Size
+=====================
+
+This section explores configuration settings for running a cluster in production.
+
+.. _prod_shard_count:
+
+Shard Count
+-----------
+
+Choosing the shard count for each distributed table is a balance between the flexibility of having more shards, and the overhead for query planning and execution across them. If you decide to change the shard count of a table after distributing, you can use the :ref:`alter_distributed_table` function.
+
+Multi-Tenant SaaS Use-Case
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The optimal choice varies depending on your access patterns for the data. For instance, in the :ref:`mt_blurb` use-case we recommend choosing between **32 - 128 shards**.  For smaller workloads say <100GB, you could start with 32 shards and for larger workloads you could choose 64 or 128. This means that you have the leeway to scale from 32 to 128 worker machines.
+
+Real-Time Analytics Use-Case
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the :ref:`rt_blurb` use-case, shard count should be related to the total number of cores on the workers. To ensure maximum parallelism, you should create enough shards on each node such that there is at least one shard per CPU core. We typically recommend creating a high number of initial shards, e.g. **2x or 4x the number of current CPU cores**. This allows for future scaling if you add more workers and CPU cores.
+
+However, keep in mind that for each query Canopy opens one database connection per shard, and these connections are limited. Be careful to keep the shard count small enough that distributed queries won't often have to wait for a connection. Put another way, the connections needed, ``(max concurrent queries * shard count)``, should generally not exceed the total connections possible in the system, ``(number of workers * max_connections per worker)``.
+
+.. _prod_size:
+
+Initial Hardware Size
+=====================
+
+The size of a cluster, in terms of number of nodes and their hardware capacity, is easy to change. However, you still need to choose an initial size for a new cluster. Here are some tips for a reasonable initial cluster size.
+
+Multi-Tenant SaaS Use-Case
+--------------------------
+
+For those migrating to Canopy from an existing single-node database instance, we recommend choosing a cluster where the number of worker cores and RAM in total equals that of the original instance. In such scenarios we have seen 2-3x performance improvements because sharding improves resource utilization, allowing smaller indices etc.
+
+The coordinator node needs less memory than workers, so you can choose a compute-optimized machine for running the coordinator. The number of cores required depends on your existing workload (write/read throughput). By default in Canopy Cloud the workers use Amazon EC2 instance type R4S, and the coordinator uses C4S.
+
+Real-Time Analytics Use-Case
+----------------------------
+
+**Total cores:** when working data fits in RAM, you can expect a linear performance improvement on Canopy proportional to the number of worker cores. To determine the right number of cores for your needs, consider the current latency for queries in your single-node database and the required latency in Canopy. Divide current latency by desired latency, and round the result.
+
+**Worker RAM:** the best case would be providing enough memory that the majority of the working set fits in memory. The type of queries your application uses affect memory requirements. You can run :code:`EXPLAIN ANALYZE` on a query to determine how much memory it requires.
+
+.. _scaling_out_cluster:
+
+Scaling the cluster
+===================
+
+Canopy’s logical sharding based architecture allows you to scale out your cluster without any downtime. This section describes how you can add more nodes to your Canopy cluster in order to improve query performance / scalability.
+
+.. _adding_worker_node:
+
+Add a worker
+------------
+
+Canopy stores all the data for distributed tables on the worker nodes. Hence, if you want to scale out your cluster by adding more computing power, you can do so by adding a worker.
+
+To add a new node to the cluster, you first need to add the DNS name or IP address of that node and port (on which LightDB is running) in the pg_dist_node catalog table. You can do so using the :ref:`citus_add_node` UDF. Example:
+
+.. code-block:: postgresql
+
+   SELECT * from canopy_add_node('node-name', 5432);
+
+The new node is available for shards of new distributed tables. Existing shards will stay where they are unless redistributed, so adding a new worker may not help performance without further steps.
+
+If your cluster has very large reference tables, they can slow down the addition of a node. In this case, consider the :ref:`replicate_reference_tables_on_activate` GUC.
+
+.. note::
+
+   Canopy workers use encrypted communication by default. A new node will refuse to talk with other workers who do not have SSL enabled. When adding a node to a cluster without encrypted communication, you must reconfigure the new node before creating the Canopy extension.
+
+   First, from the coordinator node check whether the other workers use SSL:
+
+   .. code-block:: sql
+
+      SELECT run_command_on_workers('show ssl');
+
+   If they do not, then connect to the new node and permit it to communicate over plaintext if necessary:
+
+   .. code-block:: sql
+
+      ALTER SYSTEM SET canopy.node_conninfo TO 'sslmode=prefer';
+      SELECT pg_reload_conf();
+
+.. _shard_rebalancing:
+
+Rebalance Shards
+---------------------------------
+
+.. note::
+
+  Shard rebalancing is available in Canopy, but shards are
+  blocked for write access while being moved.
+
+If you want to move existing shards to a newly added worker, Canopy provides a
+:ref:`rebalance_table_shards` function to make it easier. This function will
+move the shards of a given table to distribute them evenly among the workers.
+
+The function is configurable to rebalance shards according to a number of
+strategies, to best match your database workload. See the function reference to
+learn which strategy to choose. Here's an example of rebalancing shards using
+the default strategy:
+
+.. code-block:: postgresql
+
+  SELECT rebalance_table_shards();
+
+Adding a coordinator
+----------------------
+
+The Canopy coordinator only stores metadata about the table shards and does not store any data. This means that all the computation is pushed down to the workers and the coordinator does only final aggregations on the result of the workers. Therefore, it is not very likely that the coordinator becomes a bottleneck for read performance. Also, it is easy to boost up the coordinator by shifting to a more powerful machine.
+
+However, in some write heavy use cases where the coordinator becomes a performance bottleneck, users can add another coordinator. As the metadata tables are small (typically a few MBs in size), it is possible to copy over the metadata onto another node and sync it regularly. Once this is done, users can send their queries to any coordinator and scale out performance.
+
+.. _dealing_with_node_failures:
+
+Dealing With Node Failures
+==========================
+
+In this subsection, we discuss how you can deal with node failures without incurring any downtime on your Canopy cluster. We first discuss how Canopy handles worker failures automatically by maintaining multiple replicas of the data. We also briefly describe how users can replicate their shards to bring them to the desired replication factor in case a node is down for a long time. Lastly, we discuss how you can setup redundancy and failure handling mechanisms for the coordinator.
+
+.. _worker_node_failures:
+
+Worker Node Failures
+--------------------
+
+Canopy supports two modes of replication, allowing it to tolerate worker-node failures. In the first model, we use LightDB's streaming replication to replicate the entire worker-node as-is. In the second model, Canopy can replicate data modification statements, thus replicating shards across different worker nodes. They have different advantages depending on the workload and use-case as discussed below:
+
+1. **LightDB streaming replication.** This option is best for heavy OLTP workloads. It replicates entire worker nodes by continuously streaming their WAL records to a standby. You can configure streaming replication on-premise yourself by consulting the `LightDB replication documentation <https://www.hs.net/lightdb/docs/html/warm-standby.html#STREAMING-REPLICATION>`.
+
+2. **Canopy shard replication.** This option is best suited for an append-only workload. Canopy replicates shards across different nodes by automatically replicating DML statements and managing consistency. If a node goes down, the coordinator node will continue to serve queries by routing the work to the replicas seamlessly. To enable shard replication simply set :code:`SET canopy.shard_replication_factor = 2;` (or higher) before distributing data to the cluster.
+
+.. _coordinator_node_failures:
+
+Coordinator Node Failures
+-------------------------
+
+The Canopy coordinator maintains metadata tables to track all of the cluster nodes and the locations of the database shards on those nodes. The metadata tables are small (typically a few MBs in size) and do not change very often. This means that they can be replicated and quickly restored if the node ever experiences a failure. There are several options on how users can deal with coordinator failures.
+
+1. **Use LightDB streaming replication:** You can use LightDB's streaming
+replication feature to create a hot standby of the coordinator. Then, if the primary
+coordinator node fails, the standby can be promoted to the primary automatically to
+serve queries to your cluster.
+
+2. Since the metadata tables are small, users can use EBS volumes, or `LightDB
+backup tools <https://www.hs.net/lightdb/docs/html/backup.html>`_ to backup the metadata. Then, they can easily
+copy over that metadata to new nodes to resume operation.
+
+Resource Conservation
+=====================
+
+Limiting Long-Running Queries
+-----------------------------
+
+Long running queries can hold locks, queue up WAL, or just consume a lot of system resources, so in a production environment it's good to prevent them from running too long. You can set the `statement_timeout <https://www.hs.net/lightdb/docs/html/runtime-config-client.html#GUC-STATEMENT-TIMEOUT>`_ parameter on the coordinator and workers to cancel queries that run too long.
+
+.. code-block:: postgres
+
+   -- limit queries to five minutes
+   ALTER DATABASE canopy
+     SET statement_timeout TO 300000;
+   SELECT run_command_on_workers($cmd$
+     ALTER DATABASE canopy
+       SET statement_timeout TO 300000;
+   $cmd$);
+
+The timeout is specified in milliseconds.
+
+To customize the timeout per query, use ``SET LOCAL`` in a transaction:
+
+.. code-block:: postgres
+
+   BEGIN;
+   -- this limit applies to just the current transaction
+   SET LOCAL statement_timeout TO 300000;
+
+   -- ...
+   COMMIT;
+
+Security
+========
+
+Connection Management
+---------------------
+
+.. note::
+
+   The traffic between the different nodes in the canopy cluster is encrypted for NEW installations. This is done by using TLS with self-signed certificates. This means that this **does not protect against Man-In-The-Middle attacks.** This only protects against passive eavesdropping on the network.
+
+When Canopy nodes communicate with one another they consult a GUC for connection parameters and. This gives the database administrator flexibility to adjust parameters for security and efficiency.
+
+To set non-sensitive libpq connection parameters to be used for all node connections, update the ``canopy.node_conninfo`` GUC:
+
+.. code-block:: postgresql
+
+  -- key=value pairs separated by spaces.
+  -- For example, ssl options:
+
+  ALTER SYSTEM SET canopy.node_conninfo =
+    'sslrootcert=/path/to/canopy-ca.crt sslcrl=/path/to/canopy-ca.crl sslmode=verify-full';
+
+There is a whitelist of parameters that the GUC accepts, see the :ref:`node_conninfo <node_conninfo>` reference for details. The default value for node_conninfo is ``sslmode=require``, which prevents unencrypted communication between nodes.
+
+After changing this setting it is important to reload the lightdb configuration. Even though the changed setting might be visible in all sessions, the setting is only consulted by Canopy when new connections are established. When a reload signal is received, Canopy marks all existing connections to be closed which causes a reconnect after running transactions have been completed.
+
+.. code-block:: postgresql
+
+  SELECT pg_reload_conf();
+
+Setup Certificate Authority signed certificates
+-----------------------------------------------
+
+This section assumes you have a trusted Certificate Authority that can issue server certificates to you for all nodes in your cluster. It is recommended to work with the security department in your organization to prevent key material from being handled incorrectly. This guide covers only Canopy specific configuration that needs to be applied, not best practices for PKI management.
+
+For all nodes in the cluster you need to get a valid certificate signed by the *same Certificate Authority*. The following **machine specific** files are assumed to be available on every machine:
+
+* ``/path/to/server.key``: Server Private Key
+* ``/path/to/server.crt``: Server Certificate or Certificate Chain for Server Key, signed by trusted Certificate Authority.
+
+Next to these machine specific files you need these cluster or CA wide files available:
+
+* ``/path/to/ca.crt``: Certificate of the Certificate Authority
+* ``/path/to/ca.crl``: Certificate Revocation List of the Certificate Authority
+
+.. note::
+
+   The Certificate Revocation List is likely to change over time. Work with your security department to set up a mechanism to update the revocation list on to all nodes in the cluster in a timely manner. A reload of every node in the cluster is required after the revocation list has been updated.
+
+Once all files are in place on the nodes, the following settings need to be configured in the LightDB configuration file:
+
+.. code-block:: ini
+
+   # the following settings allow the lightdb server to enable ssl, and
+   # configure the server to present the certificate to clients when
+   # connecting over tls/ssl
+   ssl = on
+   ssl_key_file = '/path/to/server.key'
+   ssl_cert_file = '/path/to/server.crt'
+
+   # this will tell canopy to verify the certificate of the server it is connecting to
+   canopy.node_conninfo = 'sslmode=verify-full sslrootcert=/path/to/ca.crt sslcrl=/path/to/ca.crl'
+
+After changing, either restart the database or reload the configuration to apply these changes. Also, adjusting :ref:`local_hostname` may be required for proper functioning with ``sslmode=verify-full``.
+
+Depending on the policy of the Certificate Authority used you might need or want to change ``sslmode=verify-full`` in ``canopy.node_conninfo`` to ``sslmode=verify-ca``. For the difference between the two settings please consult `the official lightdb documentation <https://www.hs.net/lightdb/docs/html/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS>`_.
+
+Lastly, to prevent any user from connecting via an un-encrypted connection, changes need to be made to ``pg_hba.conf``. Many LightDB installations will have entries allowing ``host`` connections which allow SSL/TLS connections as well as plain TCP connections. By replacing all ``host`` entries with ``hostssl`` entries, only encrypted connections will be allowed to authenticate to LightDB. For full documentation on these settings take a look at `the pg_hba.conf file <https://www.hs.net/lightdb/docs/html/auth-pg-hba-conf.html>`_ documentation on the official LightDB documentation.
+
+.. note::
+
+   When a trusted Certificate Authority is not available, one can create their own via a self-signed root certificate. This is non-trivial and the developer or operator should seek guidance from their security team when doing so.
+
+To verify the connections from the coordinator to the workers are encrypted you can run the following query. It will show the SSL/TLS version used to encrypt the connection that the coordinator uses to talk to the worker:
+
+.. code-block:: postgresql
+
+  SELECT run_command_on_workers($$
+    SELECT version FROM pg_stat_ssl WHERE pid = pg_backend_pid()
+  $$);
+
+::
+  
+  ┌────────────────────────────┐
+  │   run_command_on_workers   │
+  ├────────────────────────────┤
+  │ (localhost,9701,t,TLSv1.2) │
+  │ (localhost,9702,t,TLSv1.2) │
+  └────────────────────────────┘
+  (2 rows)
+
+.. _worker_security:
+
+Increasing Worker Security
+--------------------------
+
+For your convenience getting started, our multi-node installation instructions direct you to set up the :code:`pg_hba.conf` on the workers with its `authentication method <https://www.postgresql.org/docs/current/static/auth-methods.html>`_ set to "trust" for local network connections. However, you might desire more security.
+
+To require that all connections supply a hashed password, update the LightDB :code:`pg_hba.conf` on every worker node with something like this:
+
+.. code-block:: bash
+
+  # Require password access and a ssl/tls connection to nodes in the local
+  # network. The following ranges correspond to 24, 20, and 16-bit blocks
+  # in Private IPv4 address spaces.
+  hostssl    all             all             10.0.0.0/8              md5
+
+  # Require passwords and ssl/tls connections when the host connects to
+  # itself as well.
+  hostssl    all             all             127.0.0.1/32            md5
+  hostssl    all             all             ::1/128                 md5
+
+The coordinator node needs to know roles' passwords in order to communicate with the workers. In Canopy the authentication information has to be maintained in a `.pgpass <https://www.hs.net/lightdb/docs/html/libpq-pgpass.html>`_ file. Edit .pgpass in the lightdb user's home directory, with a line for each combination of worker address and role:
+
+::
+
+  hostname:port:database:username:password
+
+Sometimes workers need to connect to one another, such as during :ref:`repartition joins <repartition_joins>`. Thus each worker node requires a copy of the .pgpass file as well.
+
+.. _sql_extensions:
+
+LightDB extensions
+=====================
+
+Canopy provides distributed functionality by extending LightDB using the hook and extension APIs. This allows users to benefit from the features that come with the rich LightDB ecosystem. These features include, but aren’t limited to, support for a wide range of `data types <http://www.postgresql.org/docs/current/static/datatype.html>`_ (including semi-structured data types like jsonb and hstore), `operators and functions <http://www.postgresql.org/docs/current/static/functions.html>`_, full text search, and other extensions such as `PostGIS <http://postgis.net/>`_ and `HyperLogLog <https://github.com/aggregateknowledge/postgresql-hll>`_. Further, proper use of the extension APIs enable compatibility with standard LightDB tools such as `pgAdmin <http://www.pgadmin.org/>`_  and `lt_upgrade <https://www.hs.net/lightdb/docs/html/pgupgrade.html>`_.
+
+As Canopy is an extension which can be installed on any LightDB instance, you can directly use other extensions such as hstore, hll, or PostGIS with Canopy. However, there is one thing to keep in mind. While including other extensions in shared_preload_libraries, you should make sure that Canopy is the first extension.
+
+In addition to our core Canopy extension, we also maintain several others:
+
+* `cstore_fdw <https://github.com/citusdata/cstore_fdw>`_ - Columnar store for analytics. The columnar nature delivers performance by reading only relevant data from disk, and it may compress data 6x-10x to reduce space requirements for data archival.
+* `pg_cron <https://github.com/citusdata/pg_cron>`_ - Run periodic jobs directly from the database.
+* `postgresql-topn <https://github.com/citusdata/postgresql-topn>`_ - Returns the top values in a database according to some criteria. Uses an approximation algorithm to provide fast results with modest compute and memory resources.
+* `postgresql-hll <https://github.com/citusdata/postgresql-hll>`_ - HyperLogLog data structure as a native data type. It's a fixed-size, set-like structure used for distinct value counting with tunable precision.
+
+.. _create_db:
+
+Creating a New Database
+=======================
+
+Each LightDB server can hold `multiple databases <https://www.hs.net/lightdb/docs/html/manage-ag-overview.html>`_. However, new databases do not inherit the extensions of any others; all desired extensions must be added afresh. To run Canopy on a new database, you'll need to create the database on the coordinator and workers, create the Canopy extension within that database, and register the workers in the coordinator database.
+
+Connect to each of the worker nodes and run:
+
+.. code-block:: psql
+
+  -- on every worker node
+
+  CREATE DATABASE newbie;
+  \c newbie
+  CREATE EXTENSION canopy;
+
+Then, on the coordinator:
+
+.. code-block:: psql
+
+  CREATE DATABASE newbie;
+  \c newbie
+  CREATE EXTENSION canopy;
+
+  SELECT * from canopy_add_node('node-name', 5432);
+  SELECT * from canopy_add_node('node-name2', 5432);
+  -- ... for all of them
+
+Now the new database will be operating as another Canopy cluster.

@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cluster Management &mdash; Canopy 10.2 documentation</title>
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/citus.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/flexboxgrid.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Table Management" href="table_management.html" />
+    <link rel="prev" title="External Integrations" href="../develop/integrations.html" />
+  
+  <script>
+    /*
+      Global variable shared with cookie consent dialog code.
+      This is to use its value uniformly throughout the page.
+    */
+    window.g_cookieConsentId = 'CitusCookieConsentCorner';
+
+    if (document.cookie.indexOf(window.g_cookieConsentId) == -1) {
+      window.YETT_BLACKLIST = [
+        /munchkin\.marketo\.net/,
+        /sjs\.bizographics\.com/,
+        /doubleclick\.net/,
+        /cdn\.heapanalytics\.com/,
+      ];
+    } else {
+      console.log("Cookies already accepted");
+      window.YETT_BLACKLIST = [ ];
+    }
+  </script>
+  <script src='https://unpkg.com/yett'></script>
+
+   
+
+  
+  <script>
+    // Read The Docs is responsible for loading GA by
+    // injecting a script into all pages. The function
+    // below assumes that this has happened.
+    window.trackOutboundLink = function(url) {
+      if (typeof(ga) == 'function') {
+        ga('send', 'event', 'outbound', 'click', url, {
+          'transport': 'beacon',
+          'hitCallback': function(){document.location = url;}
+        });
+        // cancel navigation due to click, allow the hitCallback to
+        // navigate to the next page after ga() has registered event
+        return false;
+      } else {
+        console.log("trackOutboundLink: Unable to access ga()");
+        // ga() was a no-go so allow navigation to proceed
+        return true;
+      }
+    };
+  </script>
+
+  
+  <meta name="google-site-verification" content="v8MtCUC2nV2dO-4CSGb5flD1MyPKJvw7wBDOYRwBadw" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+  
+  
+
+  
+  <meta property="og:image" content="https://docs.citusdata.com/en/stable/_images/citus-docs-og-logo.png" />
+  <meta property="og:title" content="Cluster Management - Canopy 10.2 documentation" />
+  <meta property="og:description" content="Docs for the Citus extension to Postgres. Citus distributes your data &amp; queries across multiple nodes in a cluster, so your database can scale and your queries are fast." />
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+  <a class="skiplink" href="#maincontent">Skip to main content ></a>
+  <a href="https://citusdata.com" class="homepage">
+    <img src=../_images/logo.png class="logo" alt="Citus Data logo" />
+  </a>
+
+  
+            <a href="../index.html" class="icon icon-home"> Canopy
+          </a>
+              <div class="version">
+                10.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" id="main-search" autocomplete="off" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Main">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html">What is Canopy?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#how-far-can-canopy-scale">How Far Can Canopy Scale?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html#when-to-use-canopy">When to Use Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#multi-tenant-database">Multi-Tenant Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#real-time-analytics">Real-Time Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#considerations-for-use">Considerations for Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#when-canopy-is-inappropriate">When Canopy is Inappropriate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/tutorials.html">Quick Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html">Real-time Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/single_node.html">Single-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/single_node_rhel.html">CentOS or Red Hat</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/multi_node.html">Multi-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/multi_node_rhel.html">CentOS or Red Hat</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-all-nodes">Steps to be executed on all nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-the-coordinator-node">Steps to be executed on the coordinator node</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use-Case Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#let-s-make-an-app-ad-analytics">Let’s Make an App – Ad Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-the-relational-data-model">Scaling the Relational Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#preparing-tables-and-ingesting-data">Preparing Tables and Ingesting Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/multi_tenant.html#try-it-yourself">Try it Yourself</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#integrating-applications">Integrating Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#sharing-data-between-tenants">Sharing Data Between Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#online-changes-to-the-schema">Online Changes to the Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#when-data-differs-across-tenants">When Data Differs Across Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-hardware-resources">Scaling Hardware Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#where-to-go-from-here">Where to Go From Here</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/realtime_analytics.html">Real-Time Dashboards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#data-model">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#rollups">Rollups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#expiring-old-data">Expiring Old Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#approximate-distinct-counts">Approximate Distinct Counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#unstructured-data-with-jsonb">Unstructured Data with JSONB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/timeseries.html">Timeseries Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#scaling-timeseries-data-on-canopy">Scaling Timeseries Data on Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#automating-partition-creation">Automating Partition Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#archiving-with-columnar-storage">Archiving with Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/timeseries.html#archiving-a-row-partition-to-columnar-storage">Archiving a Row Partition to Columnar Storage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#nodes">Nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#coordinator-and-workers">Coordinator and Workers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#distributed-data">Distributed Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#table-types">Table Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-1-distributed-tables">Type 1: Distributed Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-2-reference-tables">Type 2: Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-3-local-tables">Type 3: Local Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#shards">Shards</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#shard-placements">Shard Placements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#co-location">Co-Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#parallelism">Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#query-execution">Query Execution</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Develop</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../develop/app_type.html">Determining Application Type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../develop/app_type.html#at-a-glance">At a Glance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/app_type.html#examples-and-characteristics">Examples and Characteristics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sharding/data_modeling.html">Choosing Distribution Column</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#multi-tenant-apps">Multi-Tenant Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#real-time-apps">Real-Time Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id1">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#timeseries-data">Timeseries Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id2">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#table-co-location">Table Co-Location</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#data-co-location-in-canopy-for-hash-distributed-tables">Data co-location in Canopy for hash-distributed tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#a-practical-example-of-co-location">A practical example of co-location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#using-regular-lightdb-tables">Using Regular LightDB Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-id">Distributing tables by ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-tenant">Distributing tables by tenant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#co-location-means-better-feature-support">Co-location means better feature support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#query-performance">Query Performance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../develop/migration.html">Migrating an Existing App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../develop/migration_mt_schema.html">Identify Distribution Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_schema.html#pick-distribution-key">Pick distribution key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_schema.html#identify-types-of-tables">Identify types of tables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/migration_mt_schema.html#prepare-source-tables-for-migration">Prepare Source Tables for Migration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_schema.html#add-distribution-keys">Add distribution keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_schema.html#backfill-newly-created-columns">Backfill newly created columns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/migration_mt_query.html">Prepare Application for Canopy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_query.html#set-up-development-canopy-cluster">Set up Development Canopy Cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/migration_mt_query.html#include-distribution-column-in-keys">Include distribution column in keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_query.html#add-distribution-key-to-queries">Add distribution key to queries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/migration_mt_ror.html">Ruby on Rails</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/migration_mt_django.html">Django</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/migration_mt_asp.html">ASP.NET</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/migration_mt_query.html#other-sql-principles">Other (SQL Principles)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_query.html#enable-secure-connections">Enable Secure Connections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_mt_query.html#check-for-cross-node-traffic">Check for cross-node traffic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/migration_data.html">Migrate Production Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/migration_data_small.html">Small Database Migration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../develop/reference.html">SQL Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_ddl.html">Creating and Modifying Distributed Tables (DDL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_ddl.html#creating-and-distributing-tables">Creating And Distributing Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#reference-tables">Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#distributing-coordinator-data">Distributing Coordinator Data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_ddl.html#co-locating-tables">Co-Locating Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_ddl.html#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_ddl.html#modifying-tables">Modifying Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#adding-modifying-columns">Adding/Modifying Columns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#adding-removing-constraints">Adding/Removing Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#using-not-valid-constraints">Using NOT VALID Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#adding-removing-indices">Adding/Removing Indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_ddl.html#manual-modification">Manual Modification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_dml.html">Ingesting, Modifying Data (DML)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_dml.html#inserting-data">Inserting Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_dml.html#from-select-clause-distributed-rollups">“From Select” Clause (Distributed Rollups)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_dml.html#copy-command-bulk-load">COPY Command (Bulk load)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_dml.html#caching-aggregations-with-rollups">Caching Aggregations with Rollups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_dml.html#updates-and-deletion">Updates and Deletion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_dml.html#maximizing-write-performance">Maximizing Write Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_sql.html">Querying Distributed Tables (SQL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_sql.html#aggregate-functions">Aggregate Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#count-distinct-aggregates">Count (Distinct) Aggregates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#estimating-top-n-items">Estimating Top N Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#percentile-calculations">Percentile Calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_sql.html#limit-pushdown">Limit Pushdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_sql.html#views-on-distributed-tables">Views on Distributed Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_sql.html#joins">Joins</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#co-located-joins">Co-located joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#reference-table-joins">Reference table joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_sql.html#repartition-joins">Repartition joins</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_processing.html">Query Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_processing.html#distributed-query-planner">Distributed Query Planner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_processing.html#distributed-query-executor">Distributed Query Executor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_processing.html#subquery-cte-push-pull-execution">Subquery/CTE Push-Pull Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_processing.html#lightdb-planner-and-executor">LightDB planner and executor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_propagation.html">Manual Query Propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_propagation.html#running-on-all-workers">Running on all Workers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_propagation.html#running-on-all-shards">Running on all Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_propagation.html#running-on-all-placements">Running on all Placements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_propagation.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/reference_workarounds.html">SQL Support and Workarounds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/reference_workarounds.html#workarounds">Workarounds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_workarounds.html#work-around-limitations-using-ctes">Work around limitations using CTEs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/reference_workarounds.html#temp-tables-the-workaround-of-last-resort">Temp Tables: the Workaround of Last Resort</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../develop/api.html">Canopy API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../develop/api_udf.html">Canopy Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_udf.html#table-and-shard-ddl">Table and Shard DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#create-distributed-table">create_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#truncate-local-data-after-distributing-table">truncate_local_data_after_distributing_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#undistribute-table">undistribute_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#alter-distributed-table">alter_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#alter-table-set-access-method">alter_table_set_access_method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#remove-local-tables-from-metadata">remove_local_tables_from_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#create-reference-table">create_reference_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#mark-tables-colocated">mark_tables_colocated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#update-distributed-table-colocation">update_distributed_table_colocation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#create-distributed-function">create_distributed_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#master-create-empty-shard">master_create_empty_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#alter-columnar-table-set">alter_columnar_table_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#create-time-partitions">create_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#drop-old-time-partitions">drop_old_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#alter-old-partitions-set-access-method">alter_old_partitions_set_access_method</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_udf.html#table-and-shard-dml">Table and Shard DML</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#master-append-table-to-shard">master_append_table_to_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#master-apply-delete-command">master_apply_delete_command</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_udf.html#metadata-configuration-information">Metadata / Configuration Information</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-add-node">canopy_add_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-update-node">canopy_update_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-set-node-property">canopy_set_node_property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-add-inactive-node">canopy_add_inactive_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-activate-node">canopy_activate_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-disable-node">canopy_disable_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-add-secondary-node">canopy_add_secondary_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-remove-node">canopy_remove_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-get-active-worker-nodes">canopy_get_active_worker_nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-set-coordinator-host">canopy_set_coordinator_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#master-get-table-metadata">master_get_table_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#get-shard-id-for-distribution-column">get_shard_id_for_distribution_column</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#column-to-column-name">column_to_column_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-relation-size">canopy_relation_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-table-size">canopy_table_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-total-relation-size">canopy_total_relation_size</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_udf.html#cluster-management-and-repair-functions">Cluster Management And Repair Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-copy-shard-placement">canopy_copy_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-move-shard-placement">canopy_move_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#rebalance-table-shards">rebalance_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#get-rebalance-table-shards-plan">get_rebalance_table_shards_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#get-rebalance-progress">get_rebalance_progress</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-add-rebalance-strategy">canopy_add_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-set-default-rebalance-strategy">canopy_set_default_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-remote-connection-stats">canopy_remote_connection_stats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-drain-node">canopy_drain_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#replicate-table-shards">replicate_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_udf.html#canopy-create-restore-point">canopy_create_restore_point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/api_metadata.html">Canopy Tables and Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_metadata.html#coordinator-metadata">Coordinator Metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#partition-table">Partition table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#shard-table">Shard table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#shard-information-view">Shard information view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#shard-placement-table">Shard placement table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#worker-node-table">Worker node table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#distributed-object-table">Distributed object table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#canopy-tables-view">Canopy tables view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#time-partitions-view">Time partitions view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#co-location-group-table">Co-location group table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#rebalancer-strategy-table">Rebalancer strategy table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_metadata.html#distributed-query-activity">Distributed Query Activity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/api_guc.html">Configuration Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#general-configuration">General configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-max-worker-nodes-tracked-integer">canopy.max_worker_nodes_tracked (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-use-secondary-nodes-enum">canopy.use_secondary_nodes (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-cluster-name-text">canopy.cluster_name (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-enable-version-checks-boolean">canopy.enable_version_checks (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-log-distributed-deadlock-detection-boolean">canopy.log_distributed_deadlock_detection (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-distributed-deadlock-detection-factor-floating-point">canopy.distributed_deadlock_detection_factor (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-node-connection-timeout-integer">canopy.node_connection_timeout (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-node-conninfo-text">canopy.node_conninfo (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-local-hostname-text">canopy.local_hostname (text)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-multi-shard-commit-protocol-enum">canopy.multi_shard_commit_protocol (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-shard-replication-factor-integer">canopy.shard_replication_factor (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-shard-count-integer">canopy.shard_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-shard-max-size-integer">canopy.shard_max_size (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-replicate-reference-tables-on-activate-boolean">canopy.replicate_reference_tables_on_activate (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#planner-configuration">Planner Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-local-table-join-policy-enum">canopy.local_table_join_policy (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-limit-clause-row-fetch-count-integer">canopy.limit_clause_row_fetch_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-count-distinct-error-rate-floating-point">canopy.count_distinct_error_rate (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-task-assignment-policy-enum">canopy.task_assignment_policy (enum)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#intermediate-data-transfer">Intermediate Data Transfer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-binary-worker-copy-format-boolean">canopy.binary_worker_copy_format (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-max-intermediate-result-size-integer">canopy.max_intermediate_result_size (integer)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#ddl">DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-enable-ddl-propagation-boolean">canopy.enable_ddl_propagation (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#canopy-enable-local-reference-table-foreign-keys-boolean">canopy.enable_local_reference_table_foreign_keys (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/api_guc.html#executor-configuration">Executor Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/api_guc.html#explain-output">Explain output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/append.html">Append Distribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#creating-and-distributing-tables">Creating and Distributing Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#expiring-data">Expiring Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#deleting-data">Deleting Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#bulk-load-using-copy">Bulk load using \copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#incremental-loads-by-appending-to-existing-shards">Incremental loads by appending to existing shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#increasing-data-loading-performance">Increasing data loading performance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../develop/append.html#scaling-data-ingestion">Scaling Data Ingestion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#coordinator-node-bulk-ingestion-100k-s-200k-s">Coordinator Node Bulk Ingestion (100k/s-200k/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#worker-node-bulk-ingestion-100k-s-1m-s">Worker Node Bulk Ingestion (100k/s-1M/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../develop/append.html#pre-processing-data-in-canopy">Pre-processing Data in Canopy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../develop/integrations.html">External Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../develop/integrations.html#ingesting-data-from-kafka">Ingesting Data from Kafka</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../develop/integrations.html#caveats">Caveats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/integrations.html#ingesting-data-from-spark">Ingesting Data from Spark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../develop/integrations.html#business-intelligence-with-tableau">Business Intelligence with Tableau</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Administer</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cluster Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-cluster-size">Choosing Cluster Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shard-count">Shard Count</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multi-tenant-saas-use-case">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#real-time-analytics-use-case">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#initial-hardware-size">Initial Hardware Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scaling-the-cluster">Scaling the cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#add-a-worker">Add a worker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rebalance-shards">Rebalance Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-coordinator">Adding a coordinator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dealing-with-node-failures">Dealing With Node Failures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#worker-node-failures">Worker Node Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coordinator-node-failures">Coordinator Node Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#resource-conservation">Resource Conservation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limiting-long-running-queries">Limiting Long-Running Queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#connection-management">Connection Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-certificate-authority-signed-certificates">Setup Certificate Authority signed certificates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#increasing-worker-security">Increasing Worker Security</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lightdb-extensions">LightDB extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-new-database">Creating a New Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="table_management.html">Table Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="table_management.html#determining-table-and-relation-size">Determining Table and Relation Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="table_management.html#vacuuming-distributed-tables">Vacuuming Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="table_management.html#analyzing-distributed-tables">Analyzing Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="table_management.html#columnar-storage">Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="table_management.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="table_management.html#measuring-compression">Measuring compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="table_management.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="table_management.html#gotchas">Gotchas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="table_management.html#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshoot</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../performance/performance_tuning.html">Query Performance Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#table-distribution-and-shards">Table Distribution and Shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#lightdb-tuning">LightDB tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-performance">Scaling Out Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#distributed-query-performance-tuning">Distributed Query Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#general">General</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#subquery-cte-network-overhead">Subquery/CTE Network Overhead</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#advanced">Advanced</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#connection-management">Connection Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#task-assignment-policy">Task Assignment Policy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#intermediate-data-transfer-format">Intermediate Data Transfer Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#binary-protocol">Binary protocol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-data-ingestion">Scaling Out Data Ingestion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#real-time-insert-and-updates">Real-time Insert and Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-throughput">Insert Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#update-throughput">Update Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-throughput-checklist">Insert and Update: Throughput Checklist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-latency">Insert and Update: Latency</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#staging-data-temporarily">Staging Data Temporarily</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#bulk-copy-250k-2m-s">Bulk Copy (250K - 2M/s)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="diagnostic_queries.html">Useful Diagnostic Queries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#finding-which-shard-contains-data-for-a-specific-tenant">Finding which shard contains data for a specific tenant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#finding-the-distribution-column-for-a-table">Finding the distribution column for a table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#detecting-locks">Detecting locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#querying-the-size-of-your-shards">Querying the size of your shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#querying-the-size-of-all-distributed-tables">Querying the size of all distributed tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#determining-replication-factor-per-table">Determining Replication Factor per Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#identifying-unused-indices">Identifying unused indices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#monitoring-client-connection-count">Monitoring client connection count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#viewing-system-queries">Viewing system queries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="diagnostic_queries.html#active-queries">Active queries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="diagnostic_queries.html#why-are-queries-waiting">Why are queries waiting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#index-hit-rate">Index hit rate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnostic_queries.html#cache-hit-rate">Cache hit rate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/common_errors.html">Common Error Messages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-receive-query-results">Could not receive query results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#resolution">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#canceling-the-transaction-since-it-was-involved-in-a-distributed-deadlock">Canceling the transaction since it was involved in a distributed deadlock</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id1">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-server-cannot-assign-requested-address">Could not connect to server: Cannot assign requested address</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id2">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#ssl-error-certificate-verify-failed">SSL error: certificate verify failed</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id3">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-any-active-placements">Could not connect to any active placements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id4">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#remaining-connection-slots-are-reserved-for-non-replication-superuser-connections">Remaining connection slots are reserved for non-replication superuser connections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id5">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#pgbouncer-cannot-connect-to-server">PgBouncer cannot connect to server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id6">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#cannot-create-uniqueness-constraint">Cannot create uniqueness constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id7">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#function-create-distributed-table-does-not-exist">Function create_distributed_table does not exist</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id8">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#stable-functions-used-in-update-queries-cannot-be-called-with-column-references">STABLE functions used in UPDATE queries cannot be called with column references</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id9">Resolution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq/faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-create-primary-keys-on-distributed-tables">Can I create primary keys on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-add-nodes-to-an-existing-canopy-cluster">How do I add nodes to an existing Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failure-of-a-worker-node">How does Canopy handle failure of a worker node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failover-of-the-coordinator-node">How does Canopy handle failover of the coordinator node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#are-there-any-lightdb-features-not-supported-by-canopy">Are there any LightDB features not supported by Canopy?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-choose-the-shard-count-when-i-hash-partition-my-data">How do I choose the shard count when I hash-partition my data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-change-the-shard-count-for-a-hash-partitioned-table">How do I change the shard count for a hash partitioned table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-support-count-distinct-queries">How does canopy support count(distinct) queries?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#in-which-situations-are-uniqueness-constraints-supported-on-distributed-tables">In which situations are uniqueness constraints supported on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-create-database-roles-functions-extensions-etc-in-a-canopy-cluster">How do I create database roles, functions, extensions etc in a Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#what-if-a-worker-node-s-address-changes">What if a worker node’s address changes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#which-shard-contains-data-for-a-particular-tenant">Which shard contains data for a particular tenant?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#i-forgot-the-distribution-column-of-a-table-how-do-i-find-it">I forgot the distribution column of a table, how do I find it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-distribute-a-table-by-multiple-keys">Can I distribute a table by multiple keys?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-does-pg-relation-size-report-zero-bytes-for-a-distributed-table">Why does pg_relation_size report zero bytes for a distributed table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-am-i-seeing-an-error-about-max-intermediate-result-size">Why am I seeing an error about max_intermediate_result_size?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-shard-by-schema-on-canopy-for-multi-tenant-applications">Can I shard by schema on Canopy for multi-tenant applications?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Articles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../articles/index.html">Related Articles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../articles/parallel_indexing.html">LightDB Parallel Indexing in Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/aggregation.html">Real-time Event Aggregation at Scale Using LightDB with Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/outer_joins.html">How Distributed Outer Joins on LightDB with Canopy Work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/outer_joins.html#distributed-outer-joins-with-canopy">Distributed Outer Joins with Canopy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/designing_saas.html">Designing your SaaS Database for Scale with LightDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/sharding_mt_app.html">Sharding a Multi-Tenant App with LightDB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#tenancy">Tenancy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#multi-tenancy-and-co-location-a-perfect-pair">Multi-tenancy and co-location, a perfect pair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#in-conclusion">In conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/semi_structured_data.html">Sharding LightDB with Semi-Structured Data and Its Performance Implications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#one-large-table-without-joins">One large table, without joins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#enter-canopy">Enter Canopy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#the-query-workload">The query workload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#every-distribution-has-its-thorns">Every distribution has its thorns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/faceted_search.html">Scalable Real-time Product Search using LightDB with Canopy</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" aria-label="Top" >
+          <button data-toggle="wy-nav-top" class="fa fa-bars"></button>
+          <a href="../index.html">Canopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+<div role="navigation" aria-label="Breadcrumbs">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Documentation home page"></a> &raquo;</li>
+      <li>Cluster Management</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div id="maincontent" />
+
+  
+  <div class="section" id="cluster-management">
+<span id="id1"></span><h1>Cluster Management<a class="headerlink" href="#cluster-management" title="Permalink to this headline"></a></h1>
+<p>In this section, we discuss how you can add or remove nodes from your Canopy cluster and how you can deal with node failures.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To make moving shards across nodes or re-replicating shards on failed nodes easier, Canopy comes with a shard rebalancer extension. We discuss briefly about the functions provided by the shard rebalancer as and when relevant in the sections below. You can learn more about these functions, their arguments and usage, in the <a class="reference internal" href="../develop/api_udf.html#cluster-management-functions"><span class="std std-ref">Cluster Management And Repair Functions</span></a> reference section.</p>
+</div>
+<div class="section" id="choosing-cluster-size">
+<span id="production-sizing"></span><h2>Choosing Cluster Size<a class="headerlink" href="#choosing-cluster-size" title="Permalink to this headline"></a></h2>
+<p>This section explores configuration settings for running a cluster in production.</p>
+<div class="section" id="shard-count">
+<span id="prod-shard-count"></span><h3>Shard Count<a class="headerlink" href="#shard-count" title="Permalink to this headline"></a></h3>
+<p>Choosing the shard count for each distributed table is a balance between the flexibility of having more shards, and the overhead for query planning and execution across them. If you decide to change the shard count of a table after distributing, you can use the <a class="reference internal" href="../develop/api_udf.html#alter-distributed-table"><span class="std std-ref">alter_distributed_table</span></a> function.</p>
+<div class="section" id="multi-tenant-saas-use-case">
+<h4>Multi-Tenant SaaS Use-Case<a class="headerlink" href="#multi-tenant-saas-use-case" title="Permalink to this headline"></a></h4>
+<p>The optimal choice varies depending on your access patterns for the data. For instance, in the <a class="reference internal" href="../get_started/what_is_citus.html#mt-blurb"><span class="std std-ref">Multi-Tenant Database</span></a> use-case we recommend choosing between <strong>32 - 128 shards</strong>.  For smaller workloads say &lt;100GB, you could start with 32 shards and for larger workloads you could choose 64 or 128. This means that you have the leeway to scale from 32 to 128 worker machines.</p>
+</div>
+<div class="section" id="real-time-analytics-use-case">
+<h4>Real-Time Analytics Use-Case<a class="headerlink" href="#real-time-analytics-use-case" title="Permalink to this headline"></a></h4>
+<p>In the <a class="reference internal" href="../get_started/what_is_citus.html#rt-blurb"><span class="std std-ref">Real-Time Analytics</span></a> use-case, shard count should be related to the total number of cores on the workers. To ensure maximum parallelism, you should create enough shards on each node such that there is at least one shard per CPU core. We typically recommend creating a high number of initial shards, e.g. <strong>2x or 4x the number of current CPU cores</strong>. This allows for future scaling if you add more workers and CPU cores.</p>
+<p>However, keep in mind that for each query Canopy opens one database connection per shard, and these connections are limited. Be careful to keep the shard count small enough that distributed queries won’t often have to wait for a connection. Put another way, the connections needed, <code class="docutils literal notranslate"><span class="pre">(max</span> <span class="pre">concurrent</span> <span class="pre">queries</span> <span class="pre">*</span> <span class="pre">shard</span> <span class="pre">count)</span></code>, should generally not exceed the total connections possible in the system, <code class="docutils literal notranslate"><span class="pre">(number</span> <span class="pre">of</span> <span class="pre">workers</span> <span class="pre">*</span> <span class="pre">max_connections</span> <span class="pre">per</span> <span class="pre">worker)</span></code>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="initial-hardware-size">
+<span id="prod-size"></span><h2>Initial Hardware Size<a class="headerlink" href="#initial-hardware-size" title="Permalink to this headline"></a></h2>
+<p>The size of a cluster, in terms of number of nodes and their hardware capacity, is easy to change. However, you still need to choose an initial size for a new cluster. Here are some tips for a reasonable initial cluster size.</p>
+<div class="section" id="id2">
+<h3>Multi-Tenant SaaS Use-Case<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<p>For those migrating to Canopy from an existing single-node database instance, we recommend choosing a cluster where the number of worker cores and RAM in total equals that of the original instance. In such scenarios we have seen 2-3x performance improvements because sharding improves resource utilization, allowing smaller indices etc.</p>
+<p>The coordinator node needs less memory than workers, so you can choose a compute-optimized machine for running the coordinator. The number of cores required depends on your existing workload (write/read throughput). By default in Canopy Cloud the workers use Amazon EC2 instance type R4S, and the coordinator uses C4S.</p>
+</div>
+<div class="section" id="id3">
+<h3>Real-Time Analytics Use-Case<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<p><strong>Total cores:</strong> when working data fits in RAM, you can expect a linear performance improvement on Canopy proportional to the number of worker cores. To determine the right number of cores for your needs, consider the current latency for queries in your single-node database and the required latency in Canopy. Divide current latency by desired latency, and round the result.</p>
+<p><strong>Worker RAM:</strong> the best case would be providing enough memory that the majority of the working set fits in memory. The type of queries your application uses affect memory requirements. You can run <code class="code docutils literal notranslate"><span class="pre">EXPLAIN</span> <span class="pre">ANALYZE</span></code> on a query to determine how much memory it requires.</p>
+</div>
+</div>
+<div class="section" id="scaling-the-cluster">
+<span id="scaling-out-cluster"></span><h2>Scaling the cluster<a class="headerlink" href="#scaling-the-cluster" title="Permalink to this headline"></a></h2>
+<p>Canopy’s logical sharding based architecture allows you to scale out your cluster without any downtime. This section describes how you can add more nodes to your Canopy cluster in order to improve query performance / scalability.</p>
+<div class="section" id="add-a-worker">
+<span id="adding-worker-node"></span><h3>Add a worker<a class="headerlink" href="#add-a-worker" title="Permalink to this headline"></a></h3>
+<p>Canopy stores all the data for distributed tables on the worker nodes. Hence, if you want to scale out your cluster by adding more computing power, you can do so by adding a worker.</p>
+<p>To add a new node to the cluster, you first need to add the DNS name or IP address of that node and port (on which LightDB is running) in the pg_dist_node catalog table. You can do so using the <a class="reference internal" href="../develop/api_udf.html#citus-add-node"><span class="std std-ref">canopy_add_node</span></a> UDF. Example:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">canopy_add_node</span><span class="p">(</span><span class="s1">&#39;node-name&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">5432</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The new node is available for shards of new distributed tables. Existing shards will stay where they are unless redistributed, so adding a new worker may not help performance without further steps.</p>
+<p>If your cluster has very large reference tables, they can slow down the addition of a node. In this case, consider the <a class="reference internal" href="../develop/api_guc.html#replicate-reference-tables-on-activate"><span class="std std-ref">canopy.replicate_reference_tables_on_activate (boolean)</span></a> GUC.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Canopy workers use encrypted communication by default. A new node will refuse to talk with other workers who do not have SSL enabled. When adding a node to a cluster without encrypted communication, you must reconfigure the new node before creating the Canopy extension.</p>
+<p>First, from the coordinator node check whether the other workers use SSL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">run_command_on_workers</span><span class="p">(</span><span class="s1">&#39;show ssl&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>If they do not, then connect to the new node and permit it to communicate over plaintext if necessary:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span><span class="w"> </span><span class="k">SYSTEM</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">canopy</span><span class="p">.</span><span class="n">node_conninfo</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;sslmode=prefer&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pg_reload_conf</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="rebalance-shards">
+<span id="shard-rebalancing"></span><h3>Rebalance Shards<a class="headerlink" href="#rebalance-shards" title="Permalink to this headline"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Shard rebalancing is available in Canopy, but shards are
+blocked for write access while being moved.</p>
+</div>
+<p>If you want to move existing shards to a newly added worker, Canopy provides a
+<a class="reference internal" href="../develop/api_udf.html#rebalance-table-shards"><span class="std std-ref">rebalance_table_shards</span></a> function to make it easier. This function will
+move the shards of a given table to distribute them evenly among the workers.</p>
+<p>The function is configurable to rebalance shards according to a number of
+strategies, to best match your database workload. See the function reference to
+learn which strategy to choose. Here’s an example of rebalancing shards using
+the default strategy:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">rebalance_table_shards</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-a-coordinator">
+<h3>Adding a coordinator<a class="headerlink" href="#adding-a-coordinator" title="Permalink to this headline"></a></h3>
+<p>The Canopy coordinator only stores metadata about the table shards and does not store any data. This means that all the computation is pushed down to the workers and the coordinator does only final aggregations on the result of the workers. Therefore, it is not very likely that the coordinator becomes a bottleneck for read performance. Also, it is easy to boost up the coordinator by shifting to a more powerful machine.</p>
+<p>However, in some write heavy use cases where the coordinator becomes a performance bottleneck, users can add another coordinator. As the metadata tables are small (typically a few MBs in size), it is possible to copy over the metadata onto another node and sync it regularly. Once this is done, users can send their queries to any coordinator and scale out performance.</p>
+</div>
+</div>
+<div class="section" id="dealing-with-node-failures">
+<span id="id4"></span><h2>Dealing With Node Failures<a class="headerlink" href="#dealing-with-node-failures" title="Permalink to this headline"></a></h2>
+<p>In this subsection, we discuss how you can deal with node failures without incurring any downtime on your Canopy cluster. We first discuss how Canopy handles worker failures automatically by maintaining multiple replicas of the data. We also briefly describe how users can replicate their shards to bring them to the desired replication factor in case a node is down for a long time. Lastly, we discuss how you can setup redundancy and failure handling mechanisms for the coordinator.</p>
+<div class="section" id="worker-node-failures">
+<span id="id5"></span><h3>Worker Node Failures<a class="headerlink" href="#worker-node-failures" title="Permalink to this headline"></a></h3>
+<p>Canopy supports two modes of replication, allowing it to tolerate worker-node failures. In the first model, we use LightDB’s streaming replication to replicate the entire worker-node as-is. In the second model, Canopy can replicate data modification statements, thus replicating shards across different worker nodes. They have different advantages depending on the workload and use-case as discussed below:</p>
+<ol class="arabic simple">
+<li><p><strong>LightDB streaming replication.</strong> This option is best for heavy OLTP workloads. It replicates entire worker nodes by continuously streaming their WAL records to a standby. You can configure streaming replication on-premise yourself by consulting the <cite>LightDB replication documentation &lt;https://www.hs.net/lightdb/docs/html/warm-standby.html#STREAMING-REPLICATION&gt;</cite>.</p></li>
+<li><p><strong>Canopy shard replication.</strong> This option is best suited for an append-only workload. Canopy replicates shards across different nodes by automatically replicating DML statements and managing consistency. If a node goes down, the coordinator node will continue to serve queries by routing the work to the replicas seamlessly. To enable shard replication simply set <code class="code docutils literal notranslate"><span class="pre">SET</span> <span class="pre">canopy.shard_replication_factor</span> <span class="pre">=</span> <span class="pre">2;</span></code> (or higher) before distributing data to the cluster.</p></li>
+</ol>
+</div>
+<div class="section" id="coordinator-node-failures">
+<span id="id6"></span><h3>Coordinator Node Failures<a class="headerlink" href="#coordinator-node-failures" title="Permalink to this headline"></a></h3>
+<p>The Canopy coordinator maintains metadata tables to track all of the cluster nodes and the locations of the database shards on those nodes. The metadata tables are small (typically a few MBs in size) and do not change very often. This means that they can be replicated and quickly restored if the node ever experiences a failure. There are several options on how users can deal with coordinator failures.</p>
+<p>1. <strong>Use LightDB streaming replication:</strong> You can use LightDB’s streaming
+replication feature to create a hot standby of the coordinator. Then, if the primary
+coordinator node fails, the standby can be promoted to the primary automatically to
+serve queries to your cluster.</p>
+<p>2. Since the metadata tables are small, users can use EBS volumes, or <a class="reference external" href="https://www.hs.net/lightdb/docs/html/backup.html">LightDB
+backup tools</a> to backup the metadata. Then, they can easily
+copy over that metadata to new nodes to resume operation.</p>
+</div>
+</div>
+<div class="section" id="resource-conservation">
+<h2>Resource Conservation<a class="headerlink" href="#resource-conservation" title="Permalink to this headline"></a></h2>
+<div class="section" id="limiting-long-running-queries">
+<h3>Limiting Long-Running Queries<a class="headerlink" href="#limiting-long-running-queries" title="Permalink to this headline"></a></h3>
+<p>Long running queries can hold locks, queue up WAL, or just consume a lot of system resources, so in a production environment it’s good to prevent them from running too long. You can set the <a class="reference external" href="https://www.hs.net/lightdb/docs/html/runtime-config-client.html#GUC-STATEMENT-TIMEOUT">statement_timeout</a> parameter on the coordinator and workers to cancel queries that run too long.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- limit queries to five minutes</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">canopy</span><span class="w"></span>
+<span class="w">  </span><span class="k">SET</span><span class="w"> </span><span class="n">statement_timeout</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="mf">300000</span><span class="p">;</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">run_command_on_workers</span><span class="p">(</span><span class="s">$</span><span class="dl">cmd</span><span class="s">$</span>
+<span class="s">  ALTER DATABASE canopy</span>
+<span class="s">    SET statement_timeout TO 300000;</span>
+<span class="s">$</span><span class="dl">cmd</span><span class="s">$</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The timeout is specified in milliseconds.</p>
+<p>To customize the timeout per query, use <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">LOCAL</span></code> in a transaction:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">BEGIN</span><span class="p">;</span><span class="w"></span>
+<span class="c1">-- this limit applies to just the current transaction</span>
+<span class="k">SET</span><span class="w"> </span><span class="k">LOCAL</span><span class="w"> </span><span class="n">statement_timeout</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="mf">300000</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">-- ...</span>
+<span class="k">COMMIT</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline"></a></h2>
+<div class="section" id="connection-management">
+<h3>Connection Management<a class="headerlink" href="#connection-management" title="Permalink to this headline"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The traffic between the different nodes in the canopy cluster is encrypted for NEW installations. This is done by using TLS with self-signed certificates. This means that this <strong>does not protect against Man-In-The-Middle attacks.</strong> This only protects against passive eavesdropping on the network.</p>
+</div>
+<p>When Canopy nodes communicate with one another they consult a GUC for connection parameters and. This gives the database administrator flexibility to adjust parameters for security and efficiency.</p>
+<p>To set non-sensitive libpq connection parameters to be used for all node connections, update the <code class="docutils literal notranslate"><span class="pre">canopy.node_conninfo</span></code> GUC:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- key=value pairs separated by spaces.</span>
+<span class="c1">-- For example, ssl options:</span>
+
+<span class="k">ALTER</span><span class="w"> </span><span class="k">SYSTEM</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">canopy</span><span class="mf">.</span><span class="n">node_conninfo</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">  </span><span class="s1">&#39;sslrootcert=/path/to/canopy-ca.crt sslcrl=/path/to/canopy-ca.crl sslmode=verify-full&#39;</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>There is a whitelist of parameters that the GUC accepts, see the <a class="reference internal" href="../develop/api_guc.html#node-conninfo"><span class="std std-ref">node_conninfo</span></a> reference for details. The default value for node_conninfo is <code class="docutils literal notranslate"><span class="pre">sslmode=require</span></code>, which prevents unencrypted communication between nodes.</p>
+<p>After changing this setting it is important to reload the lightdb configuration. Even though the changed setting might be visible in all sessions, the setting is only consulted by Canopy when new connections are established. When a reload signal is received, Canopy marks all existing connections to be closed which causes a reconnect after running transactions have been completed.</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_reload_conf</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setup-certificate-authority-signed-certificates">
+<h3>Setup Certificate Authority signed certificates<a class="headerlink" href="#setup-certificate-authority-signed-certificates" title="Permalink to this headline"></a></h3>
+<p>This section assumes you have a trusted Certificate Authority that can issue server certificates to you for all nodes in your cluster. It is recommended to work with the security department in your organization to prevent key material from being handled incorrectly. This guide covers only Canopy specific configuration that needs to be applied, not best practices for PKI management.</p>
+<p>For all nodes in the cluster you need to get a valid certificate signed by the <em>same Certificate Authority</em>. The following <strong>machine specific</strong> files are assumed to be available on every machine:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/path/to/server.key</span></code>: Server Private Key</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/path/to/server.crt</span></code>: Server Certificate or Certificate Chain for Server Key, signed by trusted Certificate Authority.</p></li>
+</ul>
+<p>Next to these machine specific files you need these cluster or CA wide files available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/path/to/ca.crt</span></code>: Certificate of the Certificate Authority</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/path/to/ca.crl</span></code>: Certificate Revocation List of the Certificate Authority</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Certificate Revocation List is likely to change over time. Work with your security department to set up a mechanism to update the revocation list on to all nodes in the cluster in a timely manner. A reload of every node in the cluster is required after the revocation list has been updated.</p>
+</div>
+<p>Once all files are in place on the nodes, the following settings need to be configured in the LightDB configuration file:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># the following settings allow the lightdb server to enable ssl, and</span><span class="w"></span>
+<span class="c1"># configure the server to present the certificate to clients when</span><span class="w"></span>
+<span class="c1"># connecting over tls/ssl</span><span class="w"></span>
+<span class="na">ssl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">on</span><span class="w"></span>
+<span class="na">ssl_key_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;/path/to/server.key&#39;</span><span class="w"></span>
+<span class="na">ssl_cert_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;/path/to/server.crt&#39;</span><span class="w"></span>
+
+<span class="c1"># this will tell canopy to verify the certificate of the server it is connecting to</span><span class="w"></span>
+<span class="na">canopy.node_conninfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;sslmode=verify-full sslrootcert=/path/to/ca.crt sslcrl=/path/to/ca.crl&#39;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>After changing, either restart the database or reload the configuration to apply these changes. Also, adjusting <a class="reference internal" href="../develop/api_guc.html#local-hostname"><span class="std std-ref">canopy.local_hostname (text)</span></a> may be required for proper functioning with <code class="docutils literal notranslate"><span class="pre">sslmode=verify-full</span></code>.</p>
+<p>Depending on the policy of the Certificate Authority used you might need or want to change <code class="docutils literal notranslate"><span class="pre">sslmode=verify-full</span></code> in <code class="docutils literal notranslate"><span class="pre">canopy.node_conninfo</span></code> to <code class="docutils literal notranslate"><span class="pre">sslmode=verify-ca</span></code>. For the difference between the two settings please consult <a class="reference external" href="https://www.hs.net/lightdb/docs/html/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS">the official lightdb documentation</a>.</p>
+<p>Lastly, to prevent any user from connecting via an un-encrypted connection, changes need to be made to <code class="docutils literal notranslate"><span class="pre">pg_hba.conf</span></code>. Many LightDB installations will have entries allowing <code class="docutils literal notranslate"><span class="pre">host</span></code> connections which allow SSL/TLS connections as well as plain TCP connections. By replacing all <code class="docutils literal notranslate"><span class="pre">host</span></code> entries with <code class="docutils literal notranslate"><span class="pre">hostssl</span></code> entries, only encrypted connections will be allowed to authenticate to LightDB. For full documentation on these settings take a look at <a class="reference external" href="https://www.hs.net/lightdb/docs/html/auth-pg-hba-conf.html">the pg_hba.conf file</a> documentation on the official LightDB documentation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a trusted Certificate Authority is not available, one can create their own via a self-signed root certificate. This is non-trivial and the developer or operator should seek guidance from their security team when doing so.</p>
+</div>
+<p>To verify the connections from the coordinator to the workers are encrypted you can run the following query. It will show the SSL/TLS version used to encrypt the connection that the coordinator uses to talk to the worker:</p>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">run_command_on_workers</span><span class="p">(</span><span class="s">$$</span>
+<span class="s">  SELECT version FROM pg_stat_ssl WHERE pid = pg_backend_pid()</span>
+<span class="s">$$</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌────────────────────────────┐
+│   run_command_on_workers   │
+├────────────────────────────┤
+│ (localhost,9701,t,TLSv1.2) │
+│ (localhost,9702,t,TLSv1.2) │
+└────────────────────────────┘
+(2 rows)
+</pre></div>
+</div>
+</div>
+<div class="section" id="increasing-worker-security">
+<span id="worker-security"></span><h3>Increasing Worker Security<a class="headerlink" href="#increasing-worker-security" title="Permalink to this headline"></a></h3>
+<p>For your convenience getting started, our multi-node installation instructions direct you to set up the <code class="code docutils literal notranslate"><span class="pre">pg_hba.conf</span></code> on the workers with its <a class="reference external" href="https://www.postgresql.org/docs/current/static/auth-methods.html">authentication method</a> set to “trust” for local network connections. However, you might desire more security.</p>
+<p>To require that all connections supply a hashed password, update the LightDB <code class="code docutils literal notranslate"><span class="pre">pg_hba.conf</span></code> on every worker node with something like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Require password access and a ssl/tls connection to nodes in the local</span>
+<span class="c1"># network. The following ranges correspond to 24, 20, and 16-bit blocks</span>
+<span class="c1"># in Private IPv4 address spaces.</span>
+hostssl    all             all             <span class="m">10</span>.0.0.0/8              md5
+
+<span class="c1"># Require passwords and ssl/tls connections when the host connects to</span>
+<span class="c1"># itself as well.</span>
+hostssl    all             all             <span class="m">127</span>.0.0.1/32            md5
+hostssl    all             all             ::1/128                 md5
+</pre></div>
+</div>
+<p>The coordinator node needs to know roles’ passwords in order to communicate with the workers. In Canopy the authentication information has to be maintained in a <a class="reference external" href="https://www.hs.net/lightdb/docs/html/libpq-pgpass.html">.pgpass</a> file. Edit .pgpass in the lightdb user’s home directory, with a line for each combination of worker address and role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span><span class="p">:</span><span class="n">port</span><span class="p">:</span><span class="n">database</span><span class="p">:</span><span class="n">username</span><span class="p">:</span><span class="n">password</span>
+</pre></div>
+</div>
+<p>Sometimes workers need to connect to one another, such as during <a class="reference internal" href="../develop/reference_sql.html#repartition-joins"><span class="std std-ref">repartition joins</span></a>. Thus each worker node requires a copy of the .pgpass file as well.</p>
+</div>
+</div>
+<div class="section" id="lightdb-extensions">
+<span id="sql-extensions"></span><h2>LightDB extensions<a class="headerlink" href="#lightdb-extensions" title="Permalink to this headline"></a></h2>
+<p>Canopy provides distributed functionality by extending LightDB using the hook and extension APIs. This allows users to benefit from the features that come with the rich LightDB ecosystem. These features include, but aren’t limited to, support for a wide range of <a class="reference external" href="http://www.postgresql.org/docs/current/static/datatype.html">data types</a> (including semi-structured data types like jsonb and hstore), <a class="reference external" href="http://www.postgresql.org/docs/current/static/functions.html">operators and functions</a>, full text search, and other extensions such as <a class="reference external" href="http://postgis.net/">PostGIS</a> and <a class="reference external" href="https://github.com/aggregateknowledge/postgresql-hll">HyperLogLog</a>. Further, proper use of the extension APIs enable compatibility with standard LightDB tools such as <a class="reference external" href="http://www.pgadmin.org/">pgAdmin</a>  and <a class="reference external" href="https://www.hs.net/lightdb/docs/html/pgupgrade.html">lt_upgrade</a>.</p>
+<p>As Canopy is an extension which can be installed on any LightDB instance, you can directly use other extensions such as hstore, hll, or PostGIS with Canopy. However, there is one thing to keep in mind. While including other extensions in shared_preload_libraries, you should make sure that Canopy is the first extension.</p>
+<p>In addition to our core Canopy extension, we also maintain several others:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/citusdata/cstore_fdw">cstore_fdw</a> - Columnar store for analytics. The columnar nature delivers performance by reading only relevant data from disk, and it may compress data 6x-10x to reduce space requirements for data archival.</p></li>
+<li><p><a class="reference external" href="https://github.com/citusdata/pg_cron">pg_cron</a> - Run periodic jobs directly from the database.</p></li>
+<li><p><a class="reference external" href="https://github.com/citusdata/postgresql-topn">postgresql-topn</a> - Returns the top values in a database according to some criteria. Uses an approximation algorithm to provide fast results with modest compute and memory resources.</p></li>
+<li><p><a class="reference external" href="https://github.com/citusdata/postgresql-hll">postgresql-hll</a> - HyperLogLog data structure as a native data type. It’s a fixed-size, set-like structure used for distinct value counting with tunable precision.</p></li>
+</ul>
+</div>
+<div class="section" id="creating-a-new-database">
+<span id="create-db"></span><h2>Creating a New Database<a class="headerlink" href="#creating-a-new-database" title="Permalink to this headline"></a></h2>
+<p>Each LightDB server can hold <a class="reference external" href="https://www.hs.net/lightdb/docs/html/manage-ag-overview.html">multiple databases</a>. However, new databases do not inherit the extensions of any others; all desired extensions must be added afresh. To run Canopy on a new database, you’ll need to create the database on the coordinator and workers, create the Canopy extension within that database, and register the workers in the coordinator database.</p>
+<p>Connect to each of the worker nodes and run:</p>
+<div class="highlight-psql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- on every worker node</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">newbie</span><span class="p">;</span><span class="w"></span>
+<span class="go">\c newbie</span>
+<span class="go">CREATE EXTENSION canopy;</span>
+</pre></div>
+</div>
+<p>Then, on the coordinator:</p>
+<div class="highlight-psql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">newbie</span><span class="p">;</span><span class="w"></span>
+<span class="go">\c newbie</span>
+<span class="go">CREATE EXTENSION canopy;</span>
+
+<span class="go">SELECT * from canopy_add_node(&#39;node-name&#39;, 5432);</span>
+<span class="go">SELECT * from canopy_add_node(&#39;node-name2&#39;, 5432);</span>
+<span class="go">-- ... for all of them</span>
+</pre></div>
+</div>
+<p>Now the new database will be operating as another Canopy cluster.</p>
+</div>
+</div>
+
+
+
+
+           </div>
+          </div>
+        </div>
+        <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../develop/integrations.html" class="btn btn-neutral float-left" title="External Integrations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="table_management.html" class="btn btn-neutral float-right" title="Table Management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Hundsun Technologies Inc.</p>
+  </div>
+
+   
+
+</footer>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-32858865-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-32858865-1', {
+          'anonymize_ip': false,
+      });
+    </script>
+   
+
+  
+  <script type="text/javascript">
+    window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+    heap.load("4002524638");
+  </script>
+
+  
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js'></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      /* Uses global window.g_cookieConsentId defined in the <head> */
+
+      var consentValue = 'Consented';
+
+      var clickConsent = function () {
+        if ($("#consentBox").is(":visible")) {
+          if (typeof(window.yett) == 'object' &&
+              typeof(window.yett.unblock) == 'function') {
+            window.yett.unblock();
+          } else {
+            console.log("clickConsent: Unable to access window.yett.unblock()");
+          }
+          // "slideUp" means "hide," it is not a direction of movement
+          $("#consentBox").slideUp("linear");
+          $.cookie(window.g_cookieConsentId, consentValue, {
+            expires: 365,
+            path: '/'
+          });
+          if (typeof(ga) == 'function') {
+            ga('set', 'allowAdFeatures', true);
+            ga('send', 'event', 'cookie consent', 'accept', window.location.href);
+          } else {
+            console.log("clickConsent: Unable to access ga()");
+          }
+        }
+      };
+
+      // continuing to interact with the page consents to cookies
+      $("a:not(#cookiesLink), button, iframe, input, [data-toggle*='wy-nav-top'], [data-toggle*='rst-current-version']").on(
+        "click", clickConsent
+      );
+
+      if ($.cookie(window.g_cookieConsentId) != consentValue) {
+        // "slideDown" means "show," it's not a direction of movement
+        $("#consentBox").slideDown("linear");
+      };
+    });
+  </script>
+
+</body>
+</html>

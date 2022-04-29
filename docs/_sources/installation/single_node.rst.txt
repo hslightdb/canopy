@@ -1,0 +1,13 @@
+.. _development:
+
+Single-Node Canopy
+------------------
+
+To install Canopy packages on a single node, the installation
+instructions below will help you get started quickly. Single-node Canopy is
+useful for initial development and testing, as well as a way to start small in
+production and get ready for future scale and growth.
+
+.. toctree::
+
+   single_node_rhel.rst

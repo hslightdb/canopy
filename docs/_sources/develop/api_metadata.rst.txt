@@ -1,0 +1,670 @@
+.. _metadata_tables:
+
+Canopy Tables and Views
+=======================
+
+Coordinator Metadata
+--------------------
+
+Canopy divides each distributed table into multiple logical shards based on the distribution column. The coordinator then maintains metadata tables to track statistics and information about the health and location of these shards. In this section, we describe each of these metadata tables and their schema. You can view and query these tables using SQL after logging into the coordinator node.
+
+.. _partition_table:
+
+Partition table
+~~~~~~~~~~~~~~~~~
+
+The pg_dist_partition table stores metadata about which tables in the database are distributed. For each distributed table, it also stores information about the distribution method and detailed information about the distribution column.
+
++----------------+----------------------+---------------------------------------------------------------------------+
+|      Name      |         Type         |       Description                                                         |
++================+======================+===========================================================================+
+| logicalrelid   |         regclass     | | Distributed table to which this row corresponds. This value references  |
+|                |                      | | the relfilenode column in the pg_class system catalog table.            |
++----------------+----------------------+---------------------------------------------------------------------------+
+|  partmethod    |         char         | | The method used for partitioning / distribution. The values of this     |
+|                |                      | | column corresponding to different distribution methods are :-           |
+|                |                      | | append: 'a'                                                             |
+|                |                      | | hash: 'h'                                                               |
+|                |                      | | reference table: 'n'                                                    |
++----------------+----------------------+---------------------------------------------------------------------------+
+|   partkey      |         text         | | Detailed information about the distribution column including column     |
+|                |                      | | number, type and other relevant information.                            |
++----------------+----------------------+---------------------------------------------------------------------------+
+|   colocationid |         integer      | | Co-location group to which this table belongs. Tables in the same group |
+|                |                      | | allow co-located joins and distributed rollups among other              |
+|                |                      | | optimizations. This value references the colocationid column in the     |
+|                |                      | | pg_dist_colocation table.                                               |
++----------------+----------------------+---------------------------------------------------------------------------+
+|   repmodel     |         char         | | The method used for data replication. The values of this column         |
+|                |                      | | corresponding to different replication methods are :-                   |
+|                |                      | | * canopy statement-based replication: 'c'                               |
+|                |                      | | * lightdb streaming replication:  's'                                   |
+|                |                      | | * two-phase commit (for reference tables): 't'                          |
++----------------+----------------------+---------------------------------------------------------------------------+
+
+::
+
+    SELECT * from pg_dist_partition;
+     logicalrelid  | partmethod |                                                        partkey                                                         | colocationid | repmodel 
+    ---------------+------------+------------------------------------------------------------------------------------------------------------------------+--------------+----------
+     github_events | h          | {VAR :varno 1 :varattno 4 :vartype 20 :vartypmod -1 :varcollid 0 :varlevelsup 0 :varnoold 1 :varoattno 4 :location -1} |            2 | c
+     (1 row)
+
+.. _pg_dist_shard:
+
+Shard table
+~~~~~~~~~~~~~~~~~
+
+The pg_dist_shard table stores metadata about individual shards of a table. This includes information about which distributed table the shard belongs to and statistics about the distribution column for that shard. For append distributed tables, these statistics correspond to min / max values of the distribution column. In case of hash distributed tables, they are hash token ranges assigned to that shard. These statistics are used for pruning away unrelated shards during SELECT queries.
+
++----------------+----------------------+---------------------------------------------------------------------------+
+|      Name      |         Type         |       Description                                                         |
++================+======================+===========================================================================+
+| logicalrelid   |         regclass     | | Distributed table to which this shard belongs. This value references the|
+|                |                      | | relfilenode column in the pg_class system catalog table.                |
++----------------+----------------------+---------------------------------------------------------------------------+
+|    shardid     |         bigint       | | Globally unique identifier assigned to this shard.                      |
++----------------+----------------------+---------------------------------------------------------------------------+
+| shardstorage   |            char      | | Type of storage used for this shard. Different storage types are        |
+|                |                      | | discussed in the table below.                                           |
++----------------+----------------------+---------------------------------------------------------------------------+
+| shardminvalue  |            text      | | For append distributed tables, minimum value of the distribution column |
+|                |                      | | in this shard (inclusive).                                              |
+|                |                      | | For hash distributed tables, minimum hash token value assigned to that  |
+|                |                      | | shard (inclusive).                                                      |
++----------------+----------------------+---------------------------------------------------------------------------+
+| shardmaxvalue  |            text      | | For append distributed tables, maximum value of the distribution column |
+|                |                      | | in this shard (inclusive).                                              |
+|                |                      | | For hash distributed tables, maximum hash token value assigned to that  |
+|                |                      | | shard (inclusive).                                                      |
++----------------+----------------------+---------------------------------------------------------------------------+
+
+::
+
+    SELECT * from pg_dist_shard;
+     logicalrelid  | shardid | shardstorage | shardminvalue | shardmaxvalue 
+    ---------------+---------+--------------+---------------+---------------
+     github_events |  102026 | t            | 268435456     | 402653183
+     github_events |  102027 | t            | 402653184     | 536870911
+     github_events |  102028 | t            | 536870912     | 671088639
+     github_events |  102029 | t            | 671088640     | 805306367
+     (4 rows)
+
+
+Shard Storage Types
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+The shardstorage column in pg_dist_shard indicates the type of storage used for the shard. A brief overview of different shard storage types and their representation is below.
+
+
++----------------+----------------------+-----------------------------------------------------------------------------+
+|  Storage Type  |  Shardstorage value  |       Description                                                           |
++================+======================+=============================================================================+
+|   TABLE        |           't'        | | Indicates that shard stores data belonging to a regular                   |
+|                |                      | | distributed table.                                                        |
++----------------+----------------------+-----------------------------------------------------------------------------+   
+|  COLUMNAR      |            'c'       | | Indicates that shard stores columnar data. (Used by                       |
+|                |                      | | distributed cstore_fdw tables)                                            |
++----------------+----------------------+-----------------------------------------------------------------------------+
+|   FOREIGN      |            'f'       | | Indicates that shard stores foreign data. (Used by                        |
+|                |                      | | distributed file_fdw tables)                                              |
++----------------+----------------------+-----------------------------------------------------------------------------+
+
+.. _citus_shards:
+
+Shard information view
+~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to the low-level shard metadata table described above, Canopy provides a ``canopy_shards`` view to easily check:
+
+* Where each shard is (node, and port),
+* What kind of table it belongs to, and
+* Its size
+
+This view helps you inspect shards to find, among other things, any size imbalances across nodes.
+
+.. code-block:: sql
+
+  SELECT * FROM canopy_shards;
+
+::
+
+  .
+   table_name | shardid | shard_name   | canopy_table_type | colocation_id | nodename  | nodeport | shard_size
+  ------------+---------+--------------+------------------+---------------+-----------+----------+------------
+   dist       |  102170 | dist_102170  | distributed       |            34 | localhost |     9701 |   90677248
+   dist       |  102171 | dist_102171  | distributed       |            34 | localhost |     9702 |   90619904
+   dist       |  102172 | dist_102172  | distributed       |            34 | localhost |     9701 |   90701824
+   dist       |  102173 | dist_102173  | distributed       |            34 | localhost |     9702 |   90693632
+   ref        |  102174 | ref_102174   | reference         |             2 | localhost |     9701 |       8192
+   ref        |  102174 | ref_102174   | reference         |             2 | localhost |     9702 |       8192
+   dist2      |  102175 | dist2_102175 | distributed       |            34 | localhost |     9701 |     933888
+   dist2      |  102176 | dist2_102176 | distributed       |            34 | localhost |     9702 |     950272
+   dist2      |  102177 | dist2_102177 | distributed       |            34 | localhost |     9701 |     942080
+   dist2      |  102178 | dist2_102178 | distributed       |            34 | localhost |     9702 |     933888
+
+The colocation_id refers to the :ref:`colocation group <colocation_group_table>`. For more info about canopy_table_type, see :ref:`table_types`.
+
+.. _placements:
+
+Shard placement table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The pg_dist_placement table tracks the location of shard replicas on worker nodes. Each replica of a shard assigned to a specific node is called a shard placement. This table stores information about the health and location of each shard placement.
+
++----------------+----------------------+---------------------------------------------------------------------------+
+|      Name      |         Type         |       Description                                                         |
++================+======================+===========================================================================+
+| placementid    |       bigint         | | Unique auto-generated identifier for each individual placement.         |
++----------------+----------------------+---------------------------------------------------------------------------+
+| shardid        |       bigint         | | Shard identifier associated with this placement. This value references  |
+|                |                      | | the shardid column in the pg_dist_shard catalog table.                  |
++----------------+----------------------+---------------------------------------------------------------------------+ 
+| shardstate     |         int          | | Describes the state of this placement. Different shard states are       |
+|                |                      | | discussed in the section below.                                         |
++----------------+----------------------+---------------------------------------------------------------------------+
+| shardlength    |       bigint         | | For append distributed tables, the size of the shard placement on the   |
+|                |                      | | worker node in bytes.                                                   |
+|                |                      | | For hash distributed tables, zero.                                      |
++----------------+----------------------+---------------------------------------------------------------------------+
+| groupid        |         int          | | Identifier used to denote a group of one primary server and zero or more|
+|                |                      | | secondary servers.                                                      |
++----------------+----------------------+---------------------------------------------------------------------------+
+
+::
+
+  SELECT * from pg_dist_placement;
+    placementid | shardid | shardstate | shardlength | groupid
+   -------------+---------+------------+-------------+---------
+              1 |  102008 |          1 |           0 |       1
+              2 |  102008 |          1 |           0 |       2
+              3 |  102009 |          1 |           0 |       2
+              4 |  102009 |          1 |           0 |       3
+              5 |  102010 |          1 |           0 |       3
+              6 |  102010 |          1 |           0 |       4
+              7 |  102011 |          1 |           0 |       4
+
+Shard Placement States
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Canopy manages shard health on a per-placement basis and automatically marks a placement as unavailable if leaving the placement in service would put the cluster in an inconsistent state. The shardstate column in the pg_dist_placement table is used to store the state of shard placements. A brief overview of different shard placement states and their representation is below.
+
+
++----------------+----------------------+---------------------------------------------------------------------------+
+|  State name    |  Shardstate value    |       Description                                                         |
++================+======================+===========================================================================+
+|   FINALIZED    |           1          | | This is the state new shards are created in. Shard placements           |
+|                |                      | | in this state are considered up-to-date and are used in query   	    |
+|                |                      | | planning and execution.                                                 |
++----------------+----------------------+---------------------------------------------------------------------------+   
+|  INACTIVE      |            3         | | Shard placements in this state are considered inactive due to           |
+|                |                      | | being out-of-sync with other replicas of the same shard. This           |
+|                |                      | | can occur when an append, modification (INSERT, UPDATE or               |
+|                |                      | | DELETE ) or a DDL operation fails for this placement. The query         |
+|                |                      | | planner will ignore placements in this state during planning and        |
+|                |                      | | execution. Users can synchronize the data in these shards with          |
+|                |                      | | a finalized replica as a background activity.                           |
++----------------+----------------------+---------------------------------------------------------------------------+
+|   TO_DELETE    |            4         | | If Canopy attempts to drop a shard placement in response to a           |
+|                |                      | | master_apply_delete_command call and fails, the placement is            |
+|                |                      | | moved to this state. Users can then delete these shards as a            |
+|                |                      | | subsequent background activity.                                         |
++----------------+----------------------+---------------------------------------------------------------------------+
+
+
+.. _pg_dist_node:
+
+Worker node table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The pg_dist_node table contains information about the worker nodes in the cluster. 
+
++------------------+----------------------+---------------------------------------------------------------------------+
+|      Name        |         Type         |       Description                                                         |
++==================+======================+===========================================================================+
+| nodeid           |         int          | | Auto-generated identifier for an individual node.                       |
++------------------+----------------------+---------------------------------------------------------------------------+
+| groupid          |         int          | | Identifier used to denote a group of one primary server and zero or more|
+|                  |                      | | secondary servers. By default it is the same as the nodeid.             |
++------------------+----------------------+---------------------------------------------------------------------------+
+| nodename         |         text         | | Host Name or IP Address of the LightDB worker node.                     |
++------------------+----------------------+---------------------------------------------------------------------------+
+| nodeport         |         int          | | Port number on which the LightDB worker node is listening.              |
++------------------+----------------------+---------------------------------------------------------------------------+
+| noderack         |        text          | | (Optional) Rack placement information for the worker node.              |
++------------------+----------------------+---------------------------------------------------------------------------+
+| hasmetadata      |        boolean       | | Reserved for internal use.                                              |
++------------------+----------------------+---------------------------------------------------------------------------+
+| isactive         |        boolean       | | Whether the node is active accepting shard placements.                  |
++------------------+----------------------+---------------------------------------------------------------------------+
+| noderole         |        text          | | Whether the node is a primary or secondary                              |
++------------------+----------------------+---------------------------------------------------------------------------+
+| nodecluster      |        text          | | The name of the cluster containing this node                            |
++------------------+----------------------+---------------------------------------------------------------------------+
+| metadatasynced   |        boolean       | | Reserved for internal use.                                              |
++------------------+----------------------+---------------------------------------------------------------------------+
+| shouldhaveshards |        boolean       | | If false, shards will be moved off node (drained) when rebalancing,     |
+|                  |                      | | nor will shards from new distributed tables be placed on the node,      |
+|                  |                      | | unless they are colocated with shards already there                     |
++------------------+----------------------+---------------------------------------------------------------------------+
+
+::
+
+    SELECT * from pg_dist_node;
+     nodeid | groupid | nodename  | nodeport | noderack | hasmetadata | isactive | noderole | nodecluster | metadatasynced | shouldhaveshards
+    --------+---------+-----------+----------+----------+-------------+----------+----------+-------------+----------------+------------------
+          1 |       1 | localhost |    12345 | default  | f           | t        | primary  | default     | f              | t
+          2 |       2 | localhost |    12346 | default  | f           | t        | primary  | default     | f              | t
+          3 |       3 | localhost |    12347 | default  | f           | t        | primary  | default     | f              | t
+    (3 rows)
+
+.. _pg_dist_object:
+
+Distributed object table
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The canopy.pg_dist_object table contains a list of objects such as types and
+functions that have been created on the coordinator node and propagated to
+worker nodes. When an administrator adds new worker nodes to the cluster, Canopy
+automatically creates copies of the distributed objects on the new nodes (in
+the correct order to satisfy object dependencies).
+
++-----------------------------+---------+------------------------------------------------------+
+| Name                        | Type    | Description                                          |
++=============================+=========+======================================================+
+| classid                     | oid     | Class of the distributed object                      |
++-----------------------------+---------+------------------------------------------------------+
+| objid                       | oid     | Object id of the distributed object                  |
++-----------------------------+---------+------------------------------------------------------+
+| objsubid                    | integer | Object sub id of the distributed object, e.g. attnum |
++-----------------------------+---------+------------------------------------------------------+
+| type                        | text    | Part of the stable address used during pg upgrades   |
++-----------------------------+---------+------------------------------------------------------+
+| object_names                | text[]  | Part of the stable address used during pg upgrades   |
++-----------------------------+---------+------------------------------------------------------+
+| object_args                 | text[]  | Part of the stable address used during pg upgrades   |
++-----------------------------+---------+------------------------------------------------------+
+| distribution_argument_index | integer | Only valid for distributed functions/procedures      |
++-----------------------------+---------+------------------------------------------------------+
+| colocationid                | integer | Only valid for distributed functions/procedures      |
++-----------------------------+---------+------------------------------------------------------+
+
+"Stable addresses" uniquely identify objects independently of a specific
+server.  Canopy tracks objects during a LightDB upgrade using stable
+addresses created with the `pg_identify_object_as_address()
+<https://www.hs.net/lightdb/docs/html/functions-info.html#FUNCTIONS-INFO-OBJECT-TABLE>`_
+function.
+
+Here's an example of how ``create_distributed_function()`` adds entries to the
+``canopy.pg_dist_object`` table:
+
+.. code-block:: psql
+
+    CREATE TYPE stoplight AS enum ('green', 'yellow', 'red');
+
+    CREATE OR REPLACE FUNCTION intersection()
+    RETURNS stoplight AS $$
+    DECLARE
+            color stoplight;
+    BEGIN
+            SELECT *
+              FROM unnest(enum_range(NULL::stoplight)) INTO color
+             ORDER BY random() LIMIT 1;
+            RETURN color;
+    END;
+    $$ LANGUAGE plpgsql VOLATILE;
+
+    SELECT create_distributed_function('intersection()');
+
+    -- will have two rows, one for the TYPE and one for the FUNCTION
+    TABLE canopy.pg_dist_object;
+
+.. code-block:: text
+
+    -[ RECORD 1 ]---------------+------
+    classid                     | 1247
+    objid                       | 16780
+    objsubid                    | 0
+    type                        |
+    object_names                |
+    object_args                 |
+    distribution_argument_index |
+    colocationid                |
+    -[ RECORD 2 ]---------------+------
+    classid                     | 1255
+    objid                       | 16788
+    objsubid                    | 0
+    type                        |
+    object_names                |
+    object_args                 |
+    distribution_argument_index |
+    colocationid                |
+
+.. _citus_tables:
+
+Canopy tables view
+~~~~~~~~~~~~~~~~~~
+
+The canopy_tables view shows a summary of all tables managed by Canopy (distributed and reference tables). The view combines information from Canopy metadata tables for an easy, human-readable overview of these table properties:
+
+* :ref:`Table type <table_types>`
+* :ref:`Distribution column <dist_column>`
+* :ref:`Colocation group <colocation_groups>` id
+* Human-readable size
+* Shard count
+* Owner (database user)
+* Access method (heap or :ref:`columnar <columnar>`)
+
+Here's an example:
+
+.. code-block:: sql
+
+  SELECT * FROM canopy_tables;
+
+::
+
+  ┌────────────┬───────────────────┬─────────────────────┬───────────────┬────────────┬─────────────┬─────────────┬───────────────┐
+  │ table_name │ canopy_table_type │ distribution_column │ colocation_id │ table_size │ shard_count │ table_owner │ access_method │
+  ├────────────┼───────────────────┼─────────────────────┼───────────────┼────────────┼─────────────┼─────────────┼───────────────┤
+  │ foo.test   │ distributed       │ test_column         │             1 │ 0 bytes    │          32 │ canopy       │ heap         │
+  │ ref        │ reference         │ <none>              │             2 │ 24 GB      │           1 │ canopy       │ heap         │
+  │ test       │ distributed       │ id                  │             1 │ 248 TB     │          32 │ canopy       │ heap         │
+  └────────────┴───────────────────┴─────────────────────┴───────────────┴────────────┴─────────────┴─────────────┴───────────────┘
+
+.. _time_partitions:
+
+Time partitions view
+~~~~~~~~~~~~~~~~~~~~
+
+Canopy provides UDFs to manage partitions for the :ref:`timeseries` use case.
+It also maintains a ``time_partitions`` view to inspect the partitions it
+manages.
+
+Columns:
+
+* **parent_table** the table which is partitioned
+* **partition_column** the column on which the parent table is partitioned
+* **partition** the name of a partition table
+* **from_value** lower bound in time for rows in this partition
+* **to_value** upper bound in time for rows in this partition
+* **access_method** ``heap`` for row-based storage, and ``columnar`` for columnar storage
+
+.. code-block:: postgresql
+
+   SELECT * FROM time_partitions;
+
+::
+
+   ┌────────────────────────┬──────────────────┬─────────────────────────────────────────┬─────────────────────┬─────────────────────┬───────────────┐
+   │      parent_table      │ partition_column │                partition                │     from_value      │      to_value       │ access_method │
+   ├────────────────────────┼──────────────────┼─────────────────────────────────────────┼─────────────────────┼─────────────────────┼───────────────┤
+   │ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0000 │ 2015-01-01 00:00:00 │ 2015-01-01 02:00:00 │ columnar      │
+   │ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0200 │ 2015-01-01 02:00:00 │ 2015-01-01 04:00:00 │ columnar      │
+   │ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0400 │ 2015-01-01 04:00:00 │ 2015-01-01 06:00:00 │ columnar      │
+   │ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0600 │ 2015-01-01 06:00:00 │ 2015-01-01 08:00:00 │ heap          │
+   └────────────────────────┴──────────────────┴─────────────────────────────────────────┴─────────────────────┴─────────────────────┴───────────────┘
+
+.. _colocation_group_table:
+
+Co-location group table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The pg_dist_colocation table contains information about which tables' shards should be placed together, or :ref:`co-located <colocation>`. When two tables are in the same co-location group, Canopy ensures shards with the same partition values will be placed on the same worker nodes. This enables join optimizations, certain distributed rollups, and foreign key support. Shard co-location is inferred when the shard counts, replication factors, and partition column types all match between two tables; however, a custom co-location group may be specified when creating a distributed table, if so desired.
+
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+|      Name                   |         Type         |       Description                                                         |
++=============================+======================+===========================================================================+
+| colocationid                |         int          | | Unique identifier for the co-location group this row corresponds to.    |
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+| shardcount                  |         int          | | Shard count for all tables in this co-location group                    |
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+| replicationfactor           |         int          | | Replication factor for all tables in this co-location group.            |
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+| distributioncolumntype      |         oid          | | The type of the distribution column for all tables in this              |
+|                             |                      | | co-location group.                                                      |
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+| distributioncolumncollation |         oid          | | The collation of the distribution column for all tables in              |
+|                             |                      | | this co-location group.                                                 |
++-----------------------------+----------------------+---------------------------------------------------------------------------+
+
+::
+
+    SELECT * from pg_dist_colocation;
+      colocationid | shardcount | replicationfactor | distributioncolumntype | distributioncolumncollation
+     --------------+------------+-------------------+------------------------+-----------------------------
+                 2 |         32 |                 2 |                     20 |                           0
+      (1 row)
+
+.. _pg_dist_rebalance_strategy:
+
+Rebalancer strategy table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This table defines strategies that :ref:`rebalance_table_shards` can use to determine where to move shards.
+
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+|      Name                      |         Type         |       Description                                                         |
++================================+======================+===========================================================================+
+| name                           |         name         | | Unique name for the strategy                                            |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| default_strategy               |         boolean      | | Whether :ref:`rebalance_table_shards` should choose this strategy by    |
+|                                |                      | | default. Use :ref:`citus_set_default_rebalance_strategy` to update      |
+|                                |                      | | this column                                                             |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| shard_cost_function            |         regproc      | | Identifier for a cost function, which must take a shardid as bigint,    |
+|                                |                      | | and return its notion of a cost, as type real                           |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| node_capacity_function         |         regproc      | | Identifier for a capacity function, which must take a nodeid as int,    |
+|                                |                      | | and return its notion of node capacity as type real                     |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| shard_allowed_on_node_function |         regproc      | | Identifier for a function that given shardid bigint, and nodeidarg int, |
+|                                |                      | | returns boolean for whether the shard is allowed to be stored on the    |
+|                                |                      | | node                                                                    |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| default_threshold              |         float4       | | Threshold for deeming a node too full or too empty, which determines    |
+|                                |                      | | when the rebalance_table_shards should try to move shards               |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| minimum_threshold              |         float4       | | A safeguard to prevent the threshold argument of                        |
+|                                |                      | | rebalance_table_shards() from being set too low                         |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+| improvement_threshold          |         float4       | | Determines when moving a shard is worth it during a rebalance.          |
+|                                |                      | | The rebalancer will move a shard when the ratio of the improvement with |
+|                                |                      | | the shard move to the improvement without crosses the threshold. This   |
+|                                |                      | | is most useful with the by_disk_size strategy.                          |
++--------------------------------+----------------------+---------------------------------------------------------------------------+
+
+A Canopy installation ships with these strategies in the table:
+
+.. code-block:: postgres
+
+    SELECT * FROM pg_dist_rebalance_strategy;
+
+::
+
+    -[ RECORD 1 ]------------------+---------------------------------
+    name                           | by_shard_count
+    default_strategy               | t
+    shard_cost_function            | canopy_shard_cost_1
+    node_capacity_function         | canopy_node_capacity_1
+    shard_allowed_on_node_function | canopy_shard_allowed_on_node_true
+    default_threshold              | 0
+    minimum_threshold              | 0
+    improvement_threshold          | 0
+    -[ RECORD 2 ]------------------+---------------------------------
+    name                           | by_disk_size
+    default_strategy               | f
+    shard_cost_function            | canopy_shard_cost_by_disk_size
+    node_capacity_function         | canopy_node_capacity_1
+    shard_allowed_on_node_function | canopy_shard_allowed_on_node_true
+    default_threshold              | 0.1
+    minimum_threshold              | 0.01
+    improvement_threshold          | 0.5
+
+The default strategy, ``by_shard_count``, assigns every shard the same cost. Its effect is to equalize the shard count across nodes. The other predefined strategy, ``by_disk_size``, assigns a cost to each shard matching its disk size in bytes plus that of the shards that are colocated with it. The disk size is calculated using ``pg_total_relation_size``, so it includes indices. This strategy attempts to achieve the same disk space on every node. Note the threshold of 0.1 -- it prevents unnecessary shard movement caused by insigificant differences in disk space.
+
+Distributed Query Activity
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In some situations, queries might get blocked on row-level locks on one of the shards on a worker node. If that happens then those queries would not show up in `pg_locks <https://www.hs.net/lightdb/docs/html/view-pg-locks.html>`_ on the Canopy coordinator node.
+
+Canopy provides special views to watch queries and locks throughout the cluster, including shard-specific queries used internally to build results for distributed queries.
+
+* **canopy_dist_stat_activity**: shows the distributed queries that are executing on all nodes. A superset of ``pg_stat_activity``, usable wherever the latter is.
+* **canopy_worker_stat_activity**: shows queries on workers, including fragment queries against individual shards.
+* **canopy_lock_waits**: Blocked queries throughout the cluster.
+
+The first two views include all columns of `pg_stat_activity <https://www.hs.net/lightdb/docs/html/monitoring-stats.html#PG-STAT-ACTIVITY-VIEW>`_ plus the host/port of the worker that initiated the query and the host/port of the coordinator node of the cluster.
+
+For example, consider counting the rows in a distributed table:
+
+.. code-block:: postgres
+
+   -- run from worker on localhost:9701
+
+   SELECT count(*) FROM users_table;
+
+We can see the query appear in ``canopy_dist_stat_activity``:
+
+.. code-block:: postgres
+
+   SELECT * FROM canopy_dist_stat_activity;
+
+   -[ RECORD 1 ]----------+----------------------------------
+   query_hostname         | localhost
+   query_hostport         | 9701
+   master_query_host_name | localhost
+   master_query_host_port | 9701
+   transaction_number     | 1
+   transaction_stamp      | 2018-10-05 13:27:20.691907+03
+   datid                  | 12630
+   datname                | postgres
+   pid                    | 23723
+   usesysid               | 10
+   usename                | canopy
+   application_name       | ltsql
+   client_addr            | 
+   client_hostname        | 
+   client_port            | -1
+   backend_start          | 2018-10-05 13:27:14.419905+03
+   xact_start             | 2018-10-05 13:27:16.362887+03
+   query_start            | 2018-10-05 13:27:20.682452+03
+   state_change           | 2018-10-05 13:27:20.896546+03
+   wait_event_type        | Client
+   wait_event             | ClientRead
+   state                  | idle in transaction
+   backend_xid            | 
+   backend_xmin           | 
+   query                  | SELECT count(*) FROM users_table;
+   backend_type           | client backend
+
+This query requires information from all shards. Some of the information is in shard ``users_table_102038`` which happens to be stored in localhost:9700. We can see a query accessing the shard by looking at the ``canopy_worker_stat_activity`` view:
+
+.. code-block:: postgres
+
+   SELECT * FROM canopy_worker_stat_activity;
+
+   -[ RECORD 1 ]----------+-----------------------------------------------------------------------------------------
+   query_hostname         | localhost
+   query_hostport         | 9700
+   master_query_host_name | localhost
+   master_query_host_port | 9701
+   transaction_number     | 1
+   transaction_stamp      | 2018-10-05 13:27:20.691907+03
+   datid                  | 12630
+   datname                | postgres
+   pid                    | 23781
+   usesysid               | 10
+   usename                | canopy
+   application_name       | canopy
+   client_addr            | ::1
+   client_hostname        | 
+   client_port            | 51773
+   backend_start          | 2018-10-05 13:27:20.75839+03
+   xact_start             | 2018-10-05 13:27:20.84112+03
+   query_start            | 2018-10-05 13:27:20.867446+03
+   state_change           | 2018-10-05 13:27:20.869889+03
+   wait_event_type        | Client
+   wait_event             | ClientRead
+   state                  | idle in transaction
+   backend_xid            | 
+   backend_xmin           | 
+   query                  | COPY (SELECT count(*) AS count FROM users_table_102038 users_table WHERE true) TO STDOUT
+   backend_type           | client backend
+
+The ``query`` field shows data being copied out of the shard to be counted.
+
+.. note::
+
+  If a router query (e.g. single-tenant in a multi-tenant application, ``SELECT * FROM table WHERE tenant_id = X``) is executed without a transaction block, then canopy_query_host_name and canopy_query_host_port columns will be NULL in canopy_worker_stat_activity.
+
+Here are examples of useful queries you can build using
+``canopy_worker_stat_activity``:
+
+.. code-block:: postgres
+
+  -- active queries' wait events on a certain node
+
+  SELECT query, wait_event_type, wait_event
+    FROM canopy_worker_stat_activity
+   WHERE query_hostname = 'xxxx' and state='active';
+
+  -- active queries' top wait events
+
+  SELECT wait_event, wait_event_type, count(*)
+    FROM canopy_worker_stat_activity
+   WHERE state='active'
+   GROUP BY wait_event, wait_event_type
+   ORDER BY count(*) desc;
+
+  -- total internal connections generated per node by Canopy
+
+  SELECT query_hostname, count(*)
+    FROM canopy_worker_stat_activity
+   GROUP BY query_hostname;
+
+  -- total internal active connections generated per node by Canopy
+
+  SELECT query_hostname, count(*)
+    FROM canopy_worker_stat_activity
+   WHERE state='active'
+   GROUP BY query_hostname;
+
+The next view is ``canopy_lock_waits``. To see how it works, we can generate a locking situation manually. First we'll set up a test table from the coordinator:
+
+.. code-block:: postgres
+
+   CREATE TABLE numbers AS
+     SELECT i, 0 AS j FROM generate_series(1,10) AS i;
+   SELECT create_distributed_table('numbers', 'i');
+
+Then, using two sessions on the coordinator, we can run this sequence of statements:
+
+.. code-block:: postgres
+
+   -- session 1                           -- session 2
+   -------------------------------------  -------------------------------------
+   BEGIN;
+   UPDATE numbers SET j = 2 WHERE i = 1;
+                                          BEGIN;
+                                          UPDATE numbers SET j = 3 WHERE i = 1;
+                                          -- (this blocks)
+
+The ``canopy_lock_waits`` view shows the situation.
+
+.. code-block:: postgres
+
+   SELECT * FROM canopy_lock_waits;
+
+   -[ RECORD 1 ]-------------------------+----------------------------------------
+   waiting_pid                           | 88624
+   blocking_pid                          | 88615
+   blocked_statement                     | UPDATE numbers SET j = 3 WHERE i = 1;
+   current_statement_in_blocking_process | UPDATE numbers SET j = 2 WHERE i = 1;
+   waiting_node_id                       | 0
+   blocking_node_id                      | 0
+   waiting_node_name                     | coordinator_host
+   blocking_node_name                    | coordinator_host
+   waiting_node_port                     | 5432
+   blocking_node_port                    | 5432
+
+In this example the queries originated on the coordinator, but the view can also list locks between queries originating on workers.

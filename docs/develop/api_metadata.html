@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canopy Tables and Views &mdash; Canopy 10.2 documentation</title>
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/citus.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/flexboxgrid.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/pygments.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration Reference" href="api_guc.html" />
+    <link rel="prev" title="Canopy Utility Functions" href="api_udf.html" />
+  
+  <script>
+    /*
+      Global variable shared with cookie consent dialog code.
+      This is to use its value uniformly throughout the page.
+    */
+    window.g_cookieConsentId = 'CitusCookieConsentCorner';
+
+    if (document.cookie.indexOf(window.g_cookieConsentId) == -1) {
+      window.YETT_BLACKLIST = [
+        /munchkin\.marketo\.net/,
+        /sjs\.bizographics\.com/,
+        /doubleclick\.net/,
+        /cdn\.heapanalytics\.com/,
+      ];
+    } else {
+      console.log("Cookies already accepted");
+      window.YETT_BLACKLIST = [ ];
+    }
+  </script>
+  <script src='https://unpkg.com/yett'></script>
+
+   
+
+  
+  <script>
+    // Read The Docs is responsible for loading GA by
+    // injecting a script into all pages. The function
+    // below assumes that this has happened.
+    window.trackOutboundLink = function(url) {
+      if (typeof(ga) == 'function') {
+        ga('send', 'event', 'outbound', 'click', url, {
+          'transport': 'beacon',
+          'hitCallback': function(){document.location = url;}
+        });
+        // cancel navigation due to click, allow the hitCallback to
+        // navigate to the next page after ga() has registered event
+        return false;
+      } else {
+        console.log("trackOutboundLink: Unable to access ga()");
+        // ga() was a no-go so allow navigation to proceed
+        return true;
+      }
+    };
+  </script>
+
+  
+  <meta name="google-site-verification" content="v8MtCUC2nV2dO-4CSGb5flD1MyPKJvw7wBDOYRwBadw" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+  
+  
+
+  
+  <meta property="og:image" content="https://docs.citusdata.com/en/stable/_images/citus-docs-og-logo.png" />
+  <meta property="og:title" content="Canopy Tables and Views - Canopy 10.2 documentation" />
+  <meta property="og:description" content="Docs for the Citus extension to Postgres. Citus distributes your data &amp; queries across multiple nodes in a cluster, so your database can scale and your queries are fast." />
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+  <a class="skiplink" href="#maincontent">Skip to main content ></a>
+  <a href="https://citusdata.com" class="homepage">
+    <img src=../_images/logo.png class="logo" alt="Citus Data logo" />
+  </a>
+
+  
+            <a href="../index.html" class="icon icon-home"> Canopy
+          </a>
+              <div class="version">
+                10.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" id="main-search" autocomplete="off" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Main">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html">What is Canopy?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#how-far-can-canopy-scale">How Far Can Canopy Scale?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/what_is_citus.html#when-to-use-canopy">When to Use Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#multi-tenant-database">Multi-Tenant Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#real-time-analytics">Real-Time Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#considerations-for-use">Considerations for Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/what_is_citus.html#when-canopy-is-inappropriate">When Canopy is Inappropriate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/tutorials.html">Quick Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_multi_tenant.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html">Real-time Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#data-model-and-sample-data">Data model and sample data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#distributing-tables-and-loading-data">Distributing tables and loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/tutorial_realtime_analytics.html#running-queries">Running queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/single_node.html">Single-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/single_node_rhel.html">CentOS or Red Hat</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/multi_node.html">Multi-Node Canopy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/multi_node_rhel.html">CentOS or Red Hat</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-all-nodes">Steps to be executed on all nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/multi_node_rhel.html#steps-to-be-executed-on-the-coordinator-node">Steps to be executed on the coordinator node</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use-Case Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/multi_tenant.html">Multi-tenant Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#let-s-make-an-app-ad-analytics">Let’s Make an App – Ad Analytics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-the-relational-data-model">Scaling the Relational Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#preparing-tables-and-ingesting-data">Preparing Tables and Ingesting Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/multi_tenant.html#try-it-yourself">Try it Yourself</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#integrating-applications">Integrating Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#sharing-data-between-tenants">Sharing Data Between Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#online-changes-to-the-schema">Online Changes to the Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#when-data-differs-across-tenants">When Data Differs Across Tenants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#scaling-hardware-resources">Scaling Hardware Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/multi_tenant.html#where-to-go-from-here">Where to Go From Here</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/realtime_analytics.html">Real-Time Dashboards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#data-model">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#rollups">Rollups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#expiring-old-data">Expiring Old Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#approximate-distinct-counts">Approximate Distinct Counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/realtime_analytics.html#unstructured-data-with-jsonb">Unstructured Data with JSONB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../use_cases/timeseries.html">Timeseries Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#scaling-timeseries-data-on-canopy">Scaling Timeseries Data on Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#automating-partition-creation">Automating Partition Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../use_cases/timeseries.html#archiving-with-columnar-storage">Archiving with Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../use_cases/timeseries.html#archiving-a-row-partition-to-columnar-storage">Archiving a Row Partition to Columnar Storage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#nodes">Nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#coordinator-and-workers">Coordinator and Workers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#distributed-data">Distributed Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#table-types">Table Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-1-distributed-tables">Type 1: Distributed Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-2-reference-tables">Type 2: Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#type-3-local-tables">Type 3: Local Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#shards">Shards</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started/concepts.html#shard-placements">Shard Placements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#co-location">Co-Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started/concepts.html#parallelism">Parallelism</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started/concepts.html#query-execution">Query Execution</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Develop</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="app_type.html">Determining Application Type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app_type.html#at-a-glance">At a Glance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app_type.html#examples-and-characteristics">Examples and Characteristics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sharding/data_modeling.html">Choosing Distribution Column</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#multi-tenant-apps">Multi-Tenant Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#real-time-apps">Real-Time Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id1">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#timeseries-data">Timeseries Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#id2">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../sharding/data_modeling.html#table-co-location">Table Co-Location</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#data-co-location-in-canopy-for-hash-distributed-tables">Data co-location in Canopy for hash-distributed tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#a-practical-example-of-co-location">A practical example of co-location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#using-regular-lightdb-tables">Using Regular LightDB Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-id">Distributing tables by ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#distributing-tables-by-tenant">Distributing tables by tenant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#co-location-means-better-feature-support">Co-location means better feature support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sharding/data_modeling.html#query-performance">Query Performance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating an Existing App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_schema.html">Identify Distribution Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#pick-distribution-key">Pick distribution key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#identify-types-of-tables">Identify types of tables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_schema.html#prepare-source-tables-for-migration">Prepare Source Tables for Migration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#add-distribution-keys">Add distribution keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_schema.html#backfill-newly-created-columns">Backfill newly created columns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_mt_query.html">Prepare Application for Canopy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#set-up-development-canopy-cluster">Set up Development Canopy Cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_query.html#include-distribution-column-in-keys">Include distribution column in keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#add-distribution-key-to-queries">Add distribution key to queries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_ror.html">Ruby on Rails</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_django.html">Django</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_asp.html">ASP.NET</a></li>
+<li class="toctree-l4"><a class="reference internal" href="migration_mt_query.html#other-sql-principles">Other (SQL Principles)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#enable-secure-connections">Enable Secure Connections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="migration_mt_query.html#check-for-cross-node-traffic">Check for cross-node traffic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="migration_data.html">Migrate Production Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="migration_data_small.html">Small Database Migration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">SQL Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference_ddl.html">Creating and Modifying Distributed Tables (DDL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_ddl.html#creating-and-distributing-tables">Creating And Distributing Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#reference-tables">Reference Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#distributing-coordinator-data">Distributing Coordinator Data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference_ddl.html#co-locating-tables">Co-Locating Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_ddl.html#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_ddl.html#modifying-tables">Modifying Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#adding-modifying-columns">Adding/Modifying Columns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#adding-removing-constraints">Adding/Removing Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#using-not-valid-constraints">Using NOT VALID Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#adding-removing-indices">Adding/Removing Indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_ddl.html#manual-modification">Manual Modification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_dml.html">Ingesting, Modifying Data (DML)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#inserting-data">Inserting Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_dml.html#from-select-clause-distributed-rollups">“From Select” Clause (Distributed Rollups)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_dml.html#copy-command-bulk-load">COPY Command (Bulk load)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_dml.html#caching-aggregations-with-rollups">Caching Aggregations with Rollups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#updates-and-deletion">Updates and Deletion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_dml.html#maximizing-write-performance">Maximizing Write Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_sql.html">Querying Distributed Tables (SQL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#aggregate-functions">Aggregate Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#count-distinct-aggregates">Count (Distinct) Aggregates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#estimating-top-n-items">Estimating Top N Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#percentile-calculations">Percentile Calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#limit-pushdown">Limit Pushdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#views-on-distributed-tables">Views on Distributed Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_sql.html#joins">Joins</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#co-located-joins">Co-located joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#reference-table-joins">Reference table joins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_sql.html#repartition-joins">Repartition joins</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_processing.html">Query Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#distributed-query-planner">Distributed Query Planner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#distributed-query-executor">Distributed Query Executor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_processing.html#subquery-cte-push-pull-execution">Subquery/CTE Push-Pull Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference_processing.html#lightdb-planner-and-executor">LightDB planner and executor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_propagation.html">Manual Query Propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-workers">Running on all Workers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-shards">Running on all Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#running-on-all-placements">Running on all Placements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference_propagation.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference_workarounds.html">SQL Support and Workarounds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference_workarounds.html#workarounds">Workarounds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference_workarounds.html#work-around-limitations-using-ctes">Work around limitations using CTEs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference_workarounds.html#temp-tables-the-workaround-of-last-resort">Temp Tables: the Workaround of Last Resort</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">Canopy API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_udf.html">Canopy Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#table-and-shard-ddl">Table and Shard DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-distributed-table">create_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#truncate-local-data-after-distributing-table">truncate_local_data_after_distributing_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#undistribute-table">undistribute_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-distributed-table">alter_distributed_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-table-set-access-method">alter_table_set_access_method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#remove-local-tables-from-metadata">remove_local_tables_from_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-reference-table">create_reference_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#mark-tables-colocated">mark_tables_colocated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#update-distributed-table-colocation">update_distributed_table_colocation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-distributed-function">create_distributed_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-create-empty-shard">master_create_empty_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-columnar-table-set">alter_columnar_table_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#create-time-partitions">create_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#drop-old-time-partitions">drop_old_time_partitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#alter-old-partitions-set-access-method">alter_old_partitions_set_access_method</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#table-and-shard-dml">Table and Shard DML</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-append-table-to-shard">master_append_table_to_shard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-apply-delete-command">master_apply_delete_command</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#metadata-configuration-information">Metadata / Configuration Information</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-node">canopy_add_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-update-node">canopy_update_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-node-property">canopy_set_node_property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-inactive-node">canopy_add_inactive_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-activate-node">canopy_activate_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-disable-node">canopy_disable_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-secondary-node">canopy_add_secondary_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-remove-node">canopy_remove_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-get-active-worker-nodes">canopy_get_active_worker_nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-coordinator-host">canopy_set_coordinator_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#master-get-table-metadata">master_get_table_metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-shard-id-for-distribution-column">get_shard_id_for_distribution_column</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#column-to-column-name">column_to_column_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-relation-size">canopy_relation_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-table-size">canopy_table_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-total-relation-size">canopy_total_relation_size</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_udf.html#cluster-management-and-repair-functions">Cluster Management And Repair Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-copy-shard-placement">canopy_copy_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-move-shard-placement">canopy_move_shard_placement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#rebalance-table-shards">rebalance_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-rebalance-table-shards-plan">get_rebalance_table_shards_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#get-rebalance-progress">get_rebalance_progress</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-add-rebalance-strategy">canopy_add_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-set-default-rebalance-strategy">canopy_set_default_rebalance_strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-remote-connection-stats">canopy_remote_connection_stats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-drain-node">canopy_drain_node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#replicate-table-shards">replicate_table_shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_udf.html#canopy-create-restore-point">canopy_create_restore_point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Canopy Tables and Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#coordinator-metadata">Coordinator Metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#partition-table">Partition table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shard-table">Shard table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shard-information-view">Shard information view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shard-placement-table">Shard placement table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#worker-node-table">Worker node table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distributed-object-table">Distributed object table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#canopy-tables-view">Canopy tables view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-partitions-view">Time partitions view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#co-location-group-table">Co-location group table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebalancer-strategy-table">Rebalancer strategy table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distributed-query-activity">Distributed Query Activity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_guc.html">Configuration Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#general-configuration">General configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-max-worker-nodes-tracked-integer">canopy.max_worker_nodes_tracked (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-use-secondary-nodes-enum">canopy.use_secondary_nodes (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-cluster-name-text">canopy.cluster_name (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-version-checks-boolean">canopy.enable_version_checks (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-log-distributed-deadlock-detection-boolean">canopy.log_distributed_deadlock_detection (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-distributed-deadlock-detection-factor-floating-point">canopy.distributed_deadlock_detection_factor (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-node-connection-timeout-integer">canopy.node_connection_timeout (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-node-conninfo-text">canopy.node_conninfo (text)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-local-hostname-text">canopy.local_hostname (text)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-multi-shard-commit-protocol-enum">canopy.multi_shard_commit_protocol (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-replication-factor-integer">canopy.shard_replication_factor (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-count-integer">canopy.shard_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-shard-max-size-integer">canopy.shard_max_size (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-replicate-reference-tables-on-activate-boolean">canopy.replicate_reference_tables_on_activate (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#planner-configuration">Planner Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-local-table-join-policy-enum">canopy.local_table_join_policy (enum)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-limit-clause-row-fetch-count-integer">canopy.limit_clause_row_fetch_count (integer)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-count-distinct-error-rate-floating-point">canopy.count_distinct_error_rate (floating point)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-task-assignment-policy-enum">canopy.task_assignment_policy (enum)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#intermediate-data-transfer">Intermediate Data Transfer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-binary-worker-copy-format-boolean">canopy.binary_worker_copy_format (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-max-intermediate-result-size-integer">canopy.max_intermediate_result_size (integer)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#ddl">DDL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-ddl-propagation-boolean">canopy.enable_ddl_propagation (boolean)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#canopy-enable-local-reference-table-foreign-keys-boolean">canopy.enable_local_reference_table_foreign_keys (boolean)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_guc.html#executor-configuration">Executor Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_guc.html#explain-output">Explain output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="append.html">Append Distribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="append.html#creating-and-distributing-tables">Creating and Distributing Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#expiring-data">Expiring Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#deleting-data">Deleting Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#dropping-tables">Dropping Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#data-loading">Data Loading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="append.html#bulk-load-using-copy">Bulk load using \copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#incremental-loads-by-appending-to-existing-shards">Incremental loads by appending to existing shards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#increasing-data-loading-performance">Increasing data loading performance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="append.html#scaling-data-ingestion">Scaling Data Ingestion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="append.html#coordinator-node-bulk-ingestion-100k-s-200k-s">Coordinator Node Bulk Ingestion (100k/s-200k/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#worker-node-bulk-ingestion-100k-s-1m-s">Worker Node Bulk Ingestion (100k/s-1M/s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="append.html#pre-processing-data-in-canopy">Pre-processing Data in Canopy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">External Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#ingesting-data-from-kafka">Ingesting Data from Kafka</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="integrations.html#caveats">Caveats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#ingesting-data-from-spark">Ingesting Data from Spark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrations.html#business-intelligence-with-tableau">Business Intelligence with Tableau</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Administer</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/cluster_management.html">Cluster Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#choosing-cluster-size">Choosing Cluster Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#shard-count">Shard Count</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../admin_guide/cluster_management.html#multi-tenant-saas-use-case">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../admin_guide/cluster_management.html#real-time-analytics-use-case">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#initial-hardware-size">Initial Hardware Size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#id2">Multi-Tenant SaaS Use-Case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#id3">Real-Time Analytics Use-Case</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#scaling-the-cluster">Scaling the cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#add-a-worker">Add a worker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#rebalance-shards">Rebalance Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#adding-a-coordinator">Adding a coordinator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#dealing-with-node-failures">Dealing With Node Failures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#worker-node-failures">Worker Node Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#coordinator-node-failures">Coordinator Node Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#resource-conservation">Resource Conservation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#limiting-long-running-queries">Limiting Long-Running Queries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#security">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#connection-management">Connection Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#setup-certificate-authority-signed-certificates">Setup Certificate Authority signed certificates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/cluster_management.html#increasing-worker-security">Increasing Worker Security</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#lightdb-extensions">LightDB extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/cluster_management.html#creating-a-new-database">Creating a New Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/table_management.html">Table Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#determining-table-and-relation-size">Determining Table and Relation Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#vacuuming-distributed-tables">Vacuuming Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#analyzing-distributed-tables">Analyzing Distributed Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/table_management.html#columnar-storage">Columnar Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#measuring-compression">Measuring compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#gotchas">Gotchas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/table_management.html#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshoot</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../performance/performance_tuning.html">Query Performance Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#table-distribution-and-shards">Table Distribution and Shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#lightdb-tuning">LightDB tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-performance">Scaling Out Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#distributed-query-performance-tuning">Distributed Query Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#general">General</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#subquery-cte-network-overhead">Subquery/CTE Network Overhead</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#advanced">Advanced</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#connection-management">Connection Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#task-assignment-policy">Task Assignment Policy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#intermediate-data-transfer-format">Intermediate Data Transfer Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#binary-protocol">Binary protocol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../performance/performance_tuning.html#scaling-out-data-ingestion">Scaling Out Data Ingestion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#real-time-insert-and-updates">Real-time Insert and Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-throughput">Insert Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#update-throughput">Update Throughput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-throughput-checklist">Insert and Update: Throughput Checklist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../performance/performance_tuning.html#insert-and-update-latency">Insert and Update: Latency</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#staging-data-temporarily">Staging Data Temporarily</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../performance/performance_tuning.html#bulk-copy-250k-2m-s">Bulk Copy (250K - 2M/s)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin_guide/diagnostic_queries.html">Useful Diagnostic Queries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#finding-which-shard-contains-data-for-a-specific-tenant">Finding which shard contains data for a specific tenant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#finding-the-distribution-column-for-a-table">Finding the distribution column for a table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#detecting-locks">Detecting locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#querying-the-size-of-your-shards">Querying the size of your shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#querying-the-size-of-all-distributed-tables">Querying the size of all distributed tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#determining-replication-factor-per-table">Determining Replication Factor per Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#identifying-unused-indices">Identifying unused indices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#monitoring-client-connection-count">Monitoring client connection count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#viewing-system-queries">Viewing system queries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#active-queries">Active queries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#why-are-queries-waiting">Why are queries waiting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#index-hit-rate">Index hit rate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin_guide/diagnostic_queries.html#cache-hit-rate">Cache hit rate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/common_errors.html">Common Error Messages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-receive-query-results">Could not receive query results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#resolution">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#canceling-the-transaction-since-it-was-involved-in-a-distributed-deadlock">Canceling the transaction since it was involved in a distributed deadlock</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id1">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-server-cannot-assign-requested-address">Could not connect to server: Cannot assign requested address</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id2">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#ssl-error-certificate-verify-failed">SSL error: certificate verify failed</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id3">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#could-not-connect-to-any-active-placements">Could not connect to any active placements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id4">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#remaining-connection-slots-are-reserved-for-non-replication-superuser-connections">Remaining connection slots are reserved for non-replication superuser connections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id5">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#pgbouncer-cannot-connect-to-server">PgBouncer cannot connect to server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id6">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#cannot-create-uniqueness-constraint">Cannot create uniqueness constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id7">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#function-create-distributed-table-does-not-exist">Function create_distributed_table does not exist</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id8">Resolution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/common_errors.html#stable-functions-used-in-update-queries-cannot-be-called-with-column-references">STABLE functions used in UPDATE queries cannot be called with column references</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/common_errors.html#id9">Resolution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq/faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-create-primary-keys-on-distributed-tables">Can I create primary keys on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-add-nodes-to-an-existing-canopy-cluster">How do I add nodes to an existing Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failure-of-a-worker-node">How does Canopy handle failure of a worker node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-handle-failover-of-the-coordinator-node">How does Canopy handle failover of the coordinator node?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#are-there-any-lightdb-features-not-supported-by-canopy">Are there any LightDB features not supported by Canopy?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-choose-the-shard-count-when-i-hash-partition-my-data">How do I choose the shard count when I hash-partition my data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-change-the-shard-count-for-a-hash-partitioned-table">How do I change the shard count for a hash partitioned table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-does-canopy-support-count-distinct-queries">How does canopy support count(distinct) queries?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#in-which-situations-are-uniqueness-constraints-supported-on-distributed-tables">In which situations are uniqueness constraints supported on distributed tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#how-do-i-create-database-roles-functions-extensions-etc-in-a-canopy-cluster">How do I create database roles, functions, extensions etc in a Canopy cluster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#what-if-a-worker-node-s-address-changes">What if a worker node’s address changes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#which-shard-contains-data-for-a-particular-tenant">Which shard contains data for a particular tenant?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#i-forgot-the-distribution-column-of-a-table-how-do-i-find-it">I forgot the distribution column of a table, how do I find it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-distribute-a-table-by-multiple-keys">Can I distribute a table by multiple keys?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-does-pg-relation-size-report-zero-bytes-for-a-distributed-table">Why does pg_relation_size report zero bytes for a distributed table?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#why-am-i-seeing-an-error-about-max-intermediate-result-size">Why am I seeing an error about max_intermediate_result_size?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/faq.html#can-i-shard-by-schema-on-canopy-for-multi-tenant-applications">Can I shard by schema on Canopy for multi-tenant applications?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Articles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../articles/index.html">Related Articles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../articles/parallel_indexing.html">LightDB Parallel Indexing in Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/aggregation.html">Real-time Event Aggregation at Scale Using LightDB with Canopy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/outer_joins.html">How Distributed Outer Joins on LightDB with Canopy Work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/outer_joins.html#distributed-outer-joins-with-canopy">Distributed Outer Joins with Canopy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/designing_saas.html">Designing your SaaS Database for Scale with LightDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/sharding_mt_app.html">Sharding a Multi-Tenant App with LightDB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#tenancy">Tenancy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#multi-tenancy-and-co-location-a-perfect-pair">Multi-tenancy and co-location, a perfect pair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/sharding_mt_app.html#in-conclusion">In conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/semi_structured_data.html">Sharding LightDB with Semi-Structured Data and Its Performance Implications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#one-large-table-without-joins">One large table, without joins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#enter-canopy">Enter Canopy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#the-query-workload">The query workload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../articles/semi_structured_data.html#every-distribution-has-its-thorns">Every distribution has its thorns</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../articles/faceted_search.html">Scalable Real-time Product Search using LightDB with Canopy</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" aria-label="Top" >
+          <button data-toggle="wy-nav-top" class="fa fa-bars"></button>
+          <a href="../index.html">Canopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+<div role="navigation" aria-label="Breadcrumbs">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Documentation home page"></a> &raquo;</li>
+          <li><a href="api.html">Canopy API</a> &raquo;</li>
+      <li>Canopy Tables and Views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div id="maincontent" />
+
+  
+  <div class="section" id="canopy-tables-and-views">
+<span id="metadata-tables"></span><h1>Canopy Tables and Views<a class="headerlink" href="#canopy-tables-and-views" title="Permalink to this headline"></a></h1>
+<div class="section" id="coordinator-metadata">
+<h2>Coordinator Metadata<a class="headerlink" href="#coordinator-metadata" title="Permalink to this headline"></a></h2>
+<p>Canopy divides each distributed table into multiple logical shards based on the distribution column. The coordinator then maintains metadata tables to track statistics and information about the health and location of these shards. In this section, we describe each of these metadata tables and their schema. You can view and query these tables using SQL after logging into the coordinator node.</p>
+<div class="section" id="partition-table">
+<span id="id1"></span><h3>Partition table<a class="headerlink" href="#partition-table" title="Permalink to this headline"></a></h3>
+<p>The pg_dist_partition table stores metadata about which tables in the database are distributed. For each distributed table, it also stores information about the distribution method and detailed information about the distribution column.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 19%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>logicalrelid</p></td>
+<td><p>regclass</p></td>
+<td><div class="line-block">
+<div class="line">Distributed table to which this row corresponds. This value references</div>
+<div class="line">the relfilenode column in the pg_class system catalog table.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>partmethod</p></td>
+<td><p>char</p></td>
+<td><div class="line-block">
+<div class="line">The method used for partitioning / distribution. The values of this</div>
+<div class="line">column corresponding to different distribution methods are :-</div>
+<div class="line">append: ‘a’</div>
+<div class="line">hash: ‘h’</div>
+<div class="line">reference table: ‘n’</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>partkey</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">Detailed information about the distribution column including column</div>
+<div class="line">number, type and other relevant information.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>colocationid</p></td>
+<td><p>integer</p></td>
+<td><div class="line-block">
+<div class="line">Co-location group to which this table belongs. Tables in the same group</div>
+<div class="line">allow co-located joins and distributed rollups among other</div>
+<div class="line">optimizations. This value references the colocationid column in the</div>
+<div class="line">pg_dist_colocation table.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>repmodel</p></td>
+<td><p>char</p></td>
+<td><div class="line-block">
+<div class="line">The method used for data replication. The values of this column</div>
+<div class="line">corresponding to different replication methods are :-</div>
+<div class="line">* canopy statement-based replication: ‘c’</div>
+<div class="line">* lightdb streaming replication:  ‘s’</div>
+<div class="line">* two-phase commit (for reference tables): ‘t’</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">pg_dist_partition</span><span class="p">;</span>
+ <span class="n">logicalrelid</span>  <span class="o">|</span> <span class="n">partmethod</span> <span class="o">|</span>                                                        <span class="n">partkey</span>                                                         <span class="o">|</span> <span class="n">colocationid</span> <span class="o">|</span> <span class="n">repmodel</span>
+<span class="o">---------------+------------+------------------------------------------------------------------------------------------------------------------------+--------------+----------</span>
+ <span class="n">github_events</span> <span class="o">|</span> <span class="n">h</span>          <span class="o">|</span> <span class="p">{</span><span class="n">VAR</span> <span class="p">:</span><span class="n">varno</span> <span class="mi">1</span> <span class="p">:</span><span class="n">varattno</span> <span class="mi">4</span> <span class="p">:</span><span class="n">vartype</span> <span class="mi">20</span> <span class="p">:</span><span class="n">vartypmod</span> <span class="o">-</span><span class="mi">1</span> <span class="p">:</span><span class="n">varcollid</span> <span class="mi">0</span> <span class="p">:</span><span class="n">varlevelsup</span> <span class="mi">0</span> <span class="p">:</span><span class="n">varnoold</span> <span class="mi">1</span> <span class="p">:</span><span class="n">varoattno</span> <span class="mi">4</span> <span class="p">:</span><span class="n">location</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">|</span>            <span class="mi">2</span> <span class="o">|</span> <span class="n">c</span>
+ <span class="p">(</span><span class="mi">1</span> <span class="n">row</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="shard-table">
+<span id="pg-dist-shard"></span><h3>Shard table<a class="headerlink" href="#shard-table" title="Permalink to this headline"></a></h3>
+<p>The pg_dist_shard table stores metadata about individual shards of a table. This includes information about which distributed table the shard belongs to and statistics about the distribution column for that shard. For append distributed tables, these statistics correspond to min / max values of the distribution column. In case of hash distributed tables, they are hash token ranges assigned to that shard. These statistics are used for pruning away unrelated shards during SELECT queries.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 19%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>logicalrelid</p></td>
+<td><p>regclass</p></td>
+<td><div class="line-block">
+<div class="line">Distributed table to which this shard belongs. This value references the</div>
+<div class="line">relfilenode column in the pg_class system catalog table.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>shardid</p></td>
+<td><p>bigint</p></td>
+<td><div class="line-block">
+<div class="line">Globally unique identifier assigned to this shard.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shardstorage</p></td>
+<td><p>char</p></td>
+<td><div class="line-block">
+<div class="line">Type of storage used for this shard. Different storage types are</div>
+<div class="line">discussed in the table below.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>shardminvalue</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">For append distributed tables, minimum value of the distribution column</div>
+<div class="line">in this shard (inclusive).</div>
+<div class="line">For hash distributed tables, minimum hash token value assigned to that</div>
+<div class="line">shard (inclusive).</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shardmaxvalue</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">For append distributed tables, maximum value of the distribution column</div>
+<div class="line">in this shard (inclusive).</div>
+<div class="line">For hash distributed tables, maximum hash token value assigned to that</div>
+<div class="line">shard (inclusive).</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">pg_dist_shard</span><span class="p">;</span>
+ <span class="n">logicalrelid</span>  <span class="o">|</span> <span class="n">shardid</span> <span class="o">|</span> <span class="n">shardstorage</span> <span class="o">|</span> <span class="n">shardminvalue</span> <span class="o">|</span> <span class="n">shardmaxvalue</span>
+<span class="o">---------------+---------+--------------+---------------+---------------</span>
+ <span class="n">github_events</span> <span class="o">|</span>  <span class="mi">102026</span> <span class="o">|</span> <span class="n">t</span>            <span class="o">|</span> <span class="mi">268435456</span>     <span class="o">|</span> <span class="mi">402653183</span>
+ <span class="n">github_events</span> <span class="o">|</span>  <span class="mi">102027</span> <span class="o">|</span> <span class="n">t</span>            <span class="o">|</span> <span class="mi">402653184</span>     <span class="o">|</span> <span class="mi">536870911</span>
+ <span class="n">github_events</span> <span class="o">|</span>  <span class="mi">102028</span> <span class="o">|</span> <span class="n">t</span>            <span class="o">|</span> <span class="mi">536870912</span>     <span class="o">|</span> <span class="mi">671088639</span>
+ <span class="n">github_events</span> <span class="o">|</span>  <span class="mi">102029</span> <span class="o">|</span> <span class="n">t</span>            <span class="o">|</span> <span class="mi">671088640</span>     <span class="o">|</span> <span class="mi">805306367</span>
+ <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="shard-storage-types">
+<h4>Shard Storage Types<a class="headerlink" href="#shard-storage-types" title="Permalink to this headline"></a></h4>
+<p>The shardstorage column in pg_dist_shard indicates the type of storage used for the shard. A brief overview of different shard storage types and their representation is below.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 19%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Storage Type</p></th>
+<th class="head"><p>Shardstorage value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>TABLE</p></td>
+<td><p>‘t’</p></td>
+<td><div class="line-block">
+<div class="line">Indicates that shard stores data belonging to a regular</div>
+<div class="line">distributed table.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>COLUMNAR</p></td>
+<td><p>‘c’</p></td>
+<td><div class="line-block">
+<div class="line">Indicates that shard stores columnar data. (Used by</div>
+<div class="line">distributed cstore_fdw tables)</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>FOREIGN</p></td>
+<td><p>‘f’</p></td>
+<td><div class="line-block">
+<div class="line">Indicates that shard stores foreign data. (Used by</div>
+<div class="line">distributed file_fdw tables)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="shard-information-view">
+<span id="citus-shards"></span><h3>Shard information view<a class="headerlink" href="#shard-information-view" title="Permalink to this headline"></a></h3>
+<p>In addition to the low-level shard metadata table described above, Canopy provides a <code class="docutils literal notranslate"><span class="pre">canopy_shards</span></code> view to easily check:</p>
+<ul class="simple">
+<li><p>Where each shard is (node, and port),</p></li>
+<li><p>What kind of table it belongs to, and</p></li>
+<li><p>Its size</p></li>
+</ul>
+<p>This view helps you inspect shards to find, among other things, any size imbalances across nodes.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_shards</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span>
+ <span class="n">table_name</span> <span class="o">|</span> <span class="n">shardid</span> <span class="o">|</span> <span class="n">shard_name</span>   <span class="o">|</span> <span class="n">canopy_table_type</span> <span class="o">|</span> <span class="n">colocation_id</span> <span class="o">|</span> <span class="n">nodename</span>  <span class="o">|</span> <span class="n">nodeport</span> <span class="o">|</span> <span class="n">shard_size</span>
+<span class="o">------------+---------+--------------+------------------+---------------+-----------+----------+------------</span>
+ <span class="n">dist</span>       <span class="o">|</span>  <span class="mi">102170</span> <span class="o">|</span> <span class="n">dist_102170</span>  <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9701</span> <span class="o">|</span>   <span class="mi">90677248</span>
+ <span class="n">dist</span>       <span class="o">|</span>  <span class="mi">102171</span> <span class="o">|</span> <span class="n">dist_102171</span>  <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9702</span> <span class="o">|</span>   <span class="mi">90619904</span>
+ <span class="n">dist</span>       <span class="o">|</span>  <span class="mi">102172</span> <span class="o">|</span> <span class="n">dist_102172</span>  <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9701</span> <span class="o">|</span>   <span class="mi">90701824</span>
+ <span class="n">dist</span>       <span class="o">|</span>  <span class="mi">102173</span> <span class="o">|</span> <span class="n">dist_102173</span>  <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9702</span> <span class="o">|</span>   <span class="mi">90693632</span>
+ <span class="n">ref</span>        <span class="o">|</span>  <span class="mi">102174</span> <span class="o">|</span> <span class="n">ref_102174</span>   <span class="o">|</span> <span class="n">reference</span>         <span class="o">|</span>             <span class="mi">2</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9701</span> <span class="o">|</span>       <span class="mi">8192</span>
+ <span class="n">ref</span>        <span class="o">|</span>  <span class="mi">102174</span> <span class="o">|</span> <span class="n">ref_102174</span>   <span class="o">|</span> <span class="n">reference</span>         <span class="o">|</span>             <span class="mi">2</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9702</span> <span class="o">|</span>       <span class="mi">8192</span>
+ <span class="n">dist2</span>      <span class="o">|</span>  <span class="mi">102175</span> <span class="o">|</span> <span class="n">dist2_102175</span> <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9701</span> <span class="o">|</span>     <span class="mi">933888</span>
+ <span class="n">dist2</span>      <span class="o">|</span>  <span class="mi">102176</span> <span class="o">|</span> <span class="n">dist2_102176</span> <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9702</span> <span class="o">|</span>     <span class="mi">950272</span>
+ <span class="n">dist2</span>      <span class="o">|</span>  <span class="mi">102177</span> <span class="o">|</span> <span class="n">dist2_102177</span> <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9701</span> <span class="o">|</span>     <span class="mi">942080</span>
+ <span class="n">dist2</span>      <span class="o">|</span>  <span class="mi">102178</span> <span class="o">|</span> <span class="n">dist2_102178</span> <span class="o">|</span> <span class="n">distributed</span>       <span class="o">|</span>            <span class="mi">34</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>     <span class="mi">9702</span> <span class="o">|</span>     <span class="mi">933888</span>
+</pre></div>
+</div>
+<p>The colocation_id refers to the <a class="reference internal" href="#colocation-group-table"><span class="std std-ref">colocation group</span></a>. For more info about canopy_table_type, see <a class="reference internal" href="../get_started/concepts.html#table-types"><span class="std std-ref">Table Types</span></a>.</p>
+</div>
+<div class="section" id="shard-placement-table">
+<span id="placements"></span><h3>Shard placement table<a class="headerlink" href="#shard-placement-table" title="Permalink to this headline"></a></h3>
+<p>The pg_dist_placement table tracks the location of shard replicas on worker nodes. Each replica of a shard assigned to a specific node is called a shard placement. This table stores information about the health and location of each shard placement.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 19%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>placementid</p></td>
+<td><p>bigint</p></td>
+<td><div class="line-block">
+<div class="line">Unique auto-generated identifier for each individual placement.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>shardid</p></td>
+<td><p>bigint</p></td>
+<td><div class="line-block">
+<div class="line">Shard identifier associated with this placement. This value references</div>
+<div class="line">the shardid column in the pg_dist_shard catalog table.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shardstate</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Describes the state of this placement. Different shard states are</div>
+<div class="line">discussed in the section below.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>shardlength</p></td>
+<td><p>bigint</p></td>
+<td><div class="line-block">
+<div class="line">For append distributed tables, the size of the shard placement on the</div>
+<div class="line">worker node in bytes.</div>
+<div class="line">For hash distributed tables, zero.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>groupid</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Identifier used to denote a group of one primary server and zero or more</div>
+<div class="line">secondary servers.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">pg_dist_placement</span><span class="p">;</span>
+  <span class="n">placementid</span> <span class="o">|</span> <span class="n">shardid</span> <span class="o">|</span> <span class="n">shardstate</span> <span class="o">|</span> <span class="n">shardlength</span> <span class="o">|</span> <span class="n">groupid</span>
+ <span class="o">-------------+---------+------------+-------------+---------</span>
+            <span class="mi">1</span> <span class="o">|</span>  <span class="mi">102008</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">1</span>
+            <span class="mi">2</span> <span class="o">|</span>  <span class="mi">102008</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">2</span>
+            <span class="mi">3</span> <span class="o">|</span>  <span class="mi">102009</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">2</span>
+            <span class="mi">4</span> <span class="o">|</span>  <span class="mi">102009</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">3</span>
+            <span class="mi">5</span> <span class="o">|</span>  <span class="mi">102010</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">3</span>
+            <span class="mi">6</span> <span class="o">|</span>  <span class="mi">102010</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">4</span>
+            <span class="mi">7</span> <span class="o">|</span>  <span class="mi">102011</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>           <span class="mi">0</span> <span class="o">|</span>       <span class="mi">4</span>
+</pre></div>
+</div>
+<div class="section" id="shard-placement-states">
+<h4>Shard Placement States<a class="headerlink" href="#shard-placement-states" title="Permalink to this headline"></a></h4>
+<p>Canopy manages shard health on a per-placement basis and automatically marks a placement as unavailable if leaving the placement in service would put the cluster in an inconsistent state. The shardstate column in the pg_dist_placement table is used to store the state of shard placements. A brief overview of different shard placement states and their representation is below.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 19%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State name</p></th>
+<th class="head"><p>Shardstate value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>FINALIZED</p></td>
+<td><p>1</p></td>
+<td><div class="line-block">
+<div class="line">This is the state new shards are created in. Shard placements</div>
+<div class="line">in this state are considered up-to-date and are used in query</div>
+<div class="line">planning and execution.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>INACTIVE</p></td>
+<td><p>3</p></td>
+<td><div class="line-block">
+<div class="line">Shard placements in this state are considered inactive due to</div>
+<div class="line">being out-of-sync with other replicas of the same shard. This</div>
+<div class="line">can occur when an append, modification (INSERT, UPDATE or</div>
+<div class="line">DELETE ) or a DDL operation fails for this placement. The query</div>
+<div class="line">planner will ignore placements in this state during planning and</div>
+<div class="line">execution. Users can synchronize the data in these shards with</div>
+<div class="line">a finalized replica as a background activity.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>TO_DELETE</p></td>
+<td><p>4</p></td>
+<td><div class="line-block">
+<div class="line">If Canopy attempts to drop a shard placement in response to a</div>
+<div class="line">master_apply_delete_command call and fails, the placement is</div>
+<div class="line">moved to this state. Users can then delete these shards as a</div>
+<div class="line">subsequent background activity.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="worker-node-table">
+<span id="pg-dist-node"></span><h3>Worker node table<a class="headerlink" href="#worker-node-table" title="Permalink to this headline"></a></h3>
+<p>The pg_dist_node table contains information about the worker nodes in the cluster.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 19%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>nodeid</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Auto-generated identifier for an individual node.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>groupid</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Identifier used to denote a group of one primary server and zero or more</div>
+<div class="line">secondary servers. By default it is the same as the nodeid.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>nodename</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">Host Name or IP Address of the LightDB worker node.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>nodeport</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Port number on which the LightDB worker node is listening.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>noderack</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">(Optional) Rack placement information for the worker node.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>hasmetadata</p></td>
+<td><p>boolean</p></td>
+<td><div class="line-block">
+<div class="line">Reserved for internal use.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>isactive</p></td>
+<td><p>boolean</p></td>
+<td><div class="line-block">
+<div class="line">Whether the node is active accepting shard placements.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>noderole</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">Whether the node is a primary or secondary</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>nodecluster</p></td>
+<td><p>text</p></td>
+<td><div class="line-block">
+<div class="line">The name of the cluster containing this node</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>metadatasynced</p></td>
+<td><p>boolean</p></td>
+<td><div class="line-block">
+<div class="line">Reserved for internal use.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shouldhaveshards</p></td>
+<td><p>boolean</p></td>
+<td><div class="line-block">
+<div class="line">If false, shards will be moved off node (drained) when rebalancing,</div>
+<div class="line">nor will shards from new distributed tables be placed on the node,</div>
+<div class="line">unless they are colocated with shards already there</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">pg_dist_node</span><span class="p">;</span>
+ <span class="n">nodeid</span> <span class="o">|</span> <span class="n">groupid</span> <span class="o">|</span> <span class="n">nodename</span>  <span class="o">|</span> <span class="n">nodeport</span> <span class="o">|</span> <span class="n">noderack</span> <span class="o">|</span> <span class="n">hasmetadata</span> <span class="o">|</span> <span class="n">isactive</span> <span class="o">|</span> <span class="n">noderole</span> <span class="o">|</span> <span class="n">nodecluster</span> <span class="o">|</span> <span class="n">metadatasynced</span> <span class="o">|</span> <span class="n">shouldhaveshards</span>
+<span class="o">--------+---------+-----------+----------+----------+-------------+----------+----------+-------------+----------------+------------------</span>
+      <span class="mi">1</span> <span class="o">|</span>       <span class="mi">1</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>    <span class="mi">12345</span> <span class="o">|</span> <span class="n">default</span>  <span class="o">|</span> <span class="n">f</span>           <span class="o">|</span> <span class="n">t</span>        <span class="o">|</span> <span class="n">primary</span>  <span class="o">|</span> <span class="n">default</span>     <span class="o">|</span> <span class="n">f</span>              <span class="o">|</span> <span class="n">t</span>
+      <span class="mi">2</span> <span class="o">|</span>       <span class="mi">2</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>    <span class="mi">12346</span> <span class="o">|</span> <span class="n">default</span>  <span class="o">|</span> <span class="n">f</span>           <span class="o">|</span> <span class="n">t</span>        <span class="o">|</span> <span class="n">primary</span>  <span class="o">|</span> <span class="n">default</span>     <span class="o">|</span> <span class="n">f</span>              <span class="o">|</span> <span class="n">t</span>
+      <span class="mi">3</span> <span class="o">|</span>       <span class="mi">3</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span>    <span class="mi">12347</span> <span class="o">|</span> <span class="n">default</span>  <span class="o">|</span> <span class="n">f</span>           <span class="o">|</span> <span class="n">t</span>        <span class="o">|</span> <span class="n">primary</span>  <span class="o">|</span> <span class="n">default</span>     <span class="o">|</span> <span class="n">f</span>              <span class="o">|</span> <span class="n">t</span>
+<span class="p">(</span><span class="mi">3</span> <span class="n">rows</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="distributed-object-table">
+<span id="pg-dist-object"></span><h3>Distributed object table<a class="headerlink" href="#distributed-object-table" title="Permalink to this headline"></a></h3>
+<p>The canopy.pg_dist_object table contains a list of objects such as types and
+functions that have been created on the coordinator node and propagated to
+worker nodes. When an administrator adds new worker nodes to the cluster, Canopy
+automatically creates copies of the distributed objects on the new nodes (in
+the correct order to satisfy object dependencies).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 10%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>classid</p></td>
+<td><p>oid</p></td>
+<td><p>Class of the distributed object</p></td>
+</tr>
+<tr class="row-odd"><td><p>objid</p></td>
+<td><p>oid</p></td>
+<td><p>Object id of the distributed object</p></td>
+</tr>
+<tr class="row-even"><td><p>objsubid</p></td>
+<td><p>integer</p></td>
+<td><p>Object sub id of the distributed object, e.g. attnum</p></td>
+</tr>
+<tr class="row-odd"><td><p>type</p></td>
+<td><p>text</p></td>
+<td><p>Part of the stable address used during pg upgrades</p></td>
+</tr>
+<tr class="row-even"><td><p>object_names</p></td>
+<td><p>text[]</p></td>
+<td><p>Part of the stable address used during pg upgrades</p></td>
+</tr>
+<tr class="row-odd"><td><p>object_args</p></td>
+<td><p>text[]</p></td>
+<td><p>Part of the stable address used during pg upgrades</p></td>
+</tr>
+<tr class="row-even"><td><p>distribution_argument_index</p></td>
+<td><p>integer</p></td>
+<td><p>Only valid for distributed functions/procedures</p></td>
+</tr>
+<tr class="row-odd"><td><p>colocationid</p></td>
+<td><p>integer</p></td>
+<td><p>Only valid for distributed functions/procedures</p></td>
+</tr>
+</tbody>
+</table>
+<p>“Stable addresses” uniquely identify objects independently of a specific
+server.  Canopy tracks objects during a LightDB upgrade using stable
+addresses created with the <a class="reference external" href="https://www.hs.net/lightdb/docs/html/functions-info.html#FUNCTIONS-INFO-OBJECT-TABLE">pg_identify_object_as_address()</a>
+function.</p>
+<p>Here’s an example of how <code class="docutils literal notranslate"><span class="pre">create_distributed_function()</span></code> adds entries to the
+<code class="docutils literal notranslate"><span class="pre">canopy.pg_dist_object</span></code> table:</p>
+<div class="highlight-psql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="n">stoplight</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;yellow&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;red&#39;</span><span class="p">);</span><span class="w"></span>
+
+<span class="go">CREATE OR REPLACE FUNCTION intersection()</span>
+<span class="go">RETURNS stoplight AS $$</span>
+<span class="go">DECLARE</span>
+<span class="go">        color stoplight;</span>
+<span class="go">BEGIN</span>
+<span class="go">        SELECT *</span>
+<span class="go">          FROM unnest(enum_range(NULL::stoplight)) INTO color</span>
+<span class="go">         ORDER BY random() LIMIT 1;</span>
+<span class="go">        RETURN color;</span>
+<span class="go">END;</span>
+<span class="go">$$ LANGUAGE plpgsql VOLATILE;</span>
+
+<span class="go">SELECT create_distributed_function(&#39;intersection()&#39;);</span>
+
+<span class="go">-- will have two rows, one for the TYPE and one for the FUNCTION</span>
+<span class="go">TABLE canopy.pg_dist_object;</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-[ RECORD 1 ]---------------+------
+classid                     | 1247
+objid                       | 16780
+objsubid                    | 0
+type                        |
+object_names                |
+object_args                 |
+distribution_argument_index |
+colocationid                |
+-[ RECORD 2 ]---------------+------
+classid                     | 1255
+objid                       | 16788
+objsubid                    | 0
+type                        |
+object_names                |
+object_args                 |
+distribution_argument_index |
+colocationid                |
+</pre></div>
+</div>
+</div>
+<div class="section" id="canopy-tables-view">
+<span id="citus-tables"></span><h3>Canopy tables view<a class="headerlink" href="#canopy-tables-view" title="Permalink to this headline"></a></h3>
+<p>The canopy_tables view shows a summary of all tables managed by Canopy (distributed and reference tables). The view combines information from Canopy metadata tables for an easy, human-readable overview of these table properties:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../get_started/concepts.html#table-types"><span class="std std-ref">Table type</span></a></p></li>
+<li><p><a class="reference internal" href="../get_started/concepts.html#dist-column"><span class="std std-ref">Distribution column</span></a></p></li>
+<li><p><a class="reference internal" href="reference_ddl.html#colocation-groups"><span class="std std-ref">Colocation group</span></a> id</p></li>
+<li><p>Human-readable size</p></li>
+<li><p>Shard count</p></li>
+<li><p>Owner (database user)</p></li>
+<li><p>Access method (heap or <a class="reference internal" href="../admin_guide/table_management.html#columnar"><span class="std std-ref">columnar</span></a>)</p></li>
+</ul>
+<p>Here’s an example:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_tables</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌────────────┬───────────────────┬─────────────────────┬───────────────┬────────────┬─────────────┬─────────────┬───────────────┐
+│ table_name │ canopy_table_type │ distribution_column │ colocation_id │ table_size │ shard_count │ table_owner │ access_method │
+├────────────┼───────────────────┼─────────────────────┼───────────────┼────────────┼─────────────┼─────────────┼───────────────┤
+│ foo.test   │ distributed       │ test_column         │             1 │ 0 bytes    │          32 │ canopy       │ heap         │
+│ ref        │ reference         │ &lt;none&gt;              │             2 │ 24 GB      │           1 │ canopy       │ heap         │
+│ test       │ distributed       │ id                  │             1 │ 248 TB     │          32 │ canopy       │ heap         │
+└────────────┴───────────────────┴─────────────────────┴───────────────┴────────────┴─────────────┴─────────────┴───────────────┘
+</pre></div>
+</div>
+</div>
+<div class="section" id="time-partitions-view">
+<span id="time-partitions"></span><h3>Time partitions view<a class="headerlink" href="#time-partitions-view" title="Permalink to this headline"></a></h3>
+<p>Canopy provides UDFs to manage partitions for the <a class="reference internal" href="../use_cases/timeseries.html#timeseries"><span class="std std-ref">Timeseries Data</span></a> use case.
+It also maintains a <code class="docutils literal notranslate"><span class="pre">time_partitions</span></code> view to inspect the partitions it
+manages.</p>
+<p>Columns:</p>
+<ul class="simple">
+<li><p><strong>parent_table</strong> the table which is partitioned</p></li>
+<li><p><strong>partition_column</strong> the column on which the parent table is partitioned</p></li>
+<li><p><strong>partition</strong> the name of a partition table</p></li>
+<li><p><strong>from_value</strong> lower bound in time for rows in this partition</p></li>
+<li><p><strong>to_value</strong> upper bound in time for rows in this partition</p></li>
+<li><p><strong>access_method</strong> <code class="docutils literal notranslate"><span class="pre">heap</span></code> for row-based storage, and <code class="docutils literal notranslate"><span class="pre">columnar</span></code> for columnar storage</p></li>
+</ul>
+<div class="highlight-postgresql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">time_partitions</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌────────────────────────┬──────────────────┬─────────────────────────────────────────┬─────────────────────┬─────────────────────┬───────────────┐
+│      parent_table      │ partition_column │                partition                │     from_value      │      to_value       │ access_method │
+├────────────────────────┼──────────────────┼─────────────────────────────────────────┼─────────────────────┼─────────────────────┼───────────────┤
+│ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0000 │ 2015-01-01 00:00:00 │ 2015-01-01 02:00:00 │ columnar      │
+│ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0200 │ 2015-01-01 02:00:00 │ 2015-01-01 04:00:00 │ columnar      │
+│ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0400 │ 2015-01-01 04:00:00 │ 2015-01-01 06:00:00 │ columnar      │
+│ github_columnar_events │ created_at       │ github_columnar_events_p2015_01_01_0600 │ 2015-01-01 06:00:00 │ 2015-01-01 08:00:00 │ heap          │
+└────────────────────────┴──────────────────┴─────────────────────────────────────────┴─────────────────────┴─────────────────────┴───────────────┘
+</pre></div>
+</div>
+</div>
+<div class="section" id="co-location-group-table">
+<span id="colocation-group-table"></span><h3>Co-location group table<a class="headerlink" href="#co-location-group-table" title="Permalink to this headline"></a></h3>
+<p>The pg_dist_colocation table contains information about which tables’ shards should be placed together, or <a class="reference internal" href="../sharding/data_modeling.html#colocation"><span class="std std-ref">co-located</span></a>. When two tables are in the same co-location group, Canopy ensures shards with the same partition values will be placed on the same worker nodes. This enables join optimizations, certain distributed rollups, and foreign key support. Shard co-location is inferred when the shard counts, replication factors, and partition column types all match between two tables; however, a custom co-location group may be specified when creating a distributed table, if so desired.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 17%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>colocationid</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Unique identifier for the co-location group this row corresponds to.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>shardcount</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Shard count for all tables in this co-location group</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>replicationfactor</p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">Replication factor for all tables in this co-location group.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>distributioncolumntype</p></td>
+<td><p>oid</p></td>
+<td><div class="line-block">
+<div class="line">The type of the distribution column for all tables in this</div>
+<div class="line">co-location group.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>distributioncolumncollation</p></td>
+<td><p>oid</p></td>
+<td><div class="line-block">
+<div class="line">The collation of the distribution column for all tables in</div>
+<div class="line">this co-location group.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">pg_dist_colocation</span><span class="p">;</span>
+  <span class="n">colocationid</span> <span class="o">|</span> <span class="n">shardcount</span> <span class="o">|</span> <span class="n">replicationfactor</span> <span class="o">|</span> <span class="n">distributioncolumntype</span> <span class="o">|</span> <span class="n">distributioncolumncollation</span>
+ <span class="o">--------------+------------+-------------------+------------------------+-----------------------------</span>
+             <span class="mi">2</span> <span class="o">|</span>         <span class="mi">32</span> <span class="o">|</span>                 <span class="mi">2</span> <span class="o">|</span>                     <span class="mi">20</span> <span class="o">|</span>                           <span class="mi">0</span>
+  <span class="p">(</span><span class="mi">1</span> <span class="n">row</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rebalancer-strategy-table">
+<span id="pg-dist-rebalance-strategy"></span><h3>Rebalancer strategy table<a class="headerlink" href="#rebalancer-strategy-table" title="Permalink to this headline"></a></h3>
+<p>This table defines strategies that <a class="reference internal" href="api_udf.html#rebalance-table-shards"><span class="std std-ref">rebalance_table_shards</span></a> can use to determine where to move shards.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 17%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>name</p></td>
+<td><div class="line-block">
+<div class="line">Unique name for the strategy</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>default_strategy</p></td>
+<td><p>boolean</p></td>
+<td><div class="line-block">
+<div class="line">Whether <a class="reference internal" href="api_udf.html#rebalance-table-shards"><span class="std std-ref">rebalance_table_shards</span></a> should choose this strategy by</div>
+<div class="line">default. Use <a class="reference internal" href="api_udf.html#citus-set-default-rebalance-strategy"><span class="std std-ref">canopy_set_default_rebalance_strategy</span></a> to update</div>
+<div class="line">this column</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shard_cost_function</p></td>
+<td><p>regproc</p></td>
+<td><div class="line-block">
+<div class="line">Identifier for a cost function, which must take a shardid as bigint,</div>
+<div class="line">and return its notion of a cost, as type real</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>node_capacity_function</p></td>
+<td><p>regproc</p></td>
+<td><div class="line-block">
+<div class="line">Identifier for a capacity function, which must take a nodeid as int,</div>
+<div class="line">and return its notion of node capacity as type real</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>shard_allowed_on_node_function</p></td>
+<td><p>regproc</p></td>
+<td><div class="line-block">
+<div class="line">Identifier for a function that given shardid bigint, and nodeidarg int,</div>
+<div class="line">returns boolean for whether the shard is allowed to be stored on the</div>
+<div class="line">node</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>default_threshold</p></td>
+<td><p>float4</p></td>
+<td><div class="line-block">
+<div class="line">Threshold for deeming a node too full or too empty, which determines</div>
+<div class="line">when the rebalance_table_shards should try to move shards</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>minimum_threshold</p></td>
+<td><p>float4</p></td>
+<td><div class="line-block">
+<div class="line">A safeguard to prevent the threshold argument of</div>
+<div class="line">rebalance_table_shards() from being set too low</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>improvement_threshold</p></td>
+<td><p>float4</p></td>
+<td><div class="line-block">
+<div class="line">Determines when moving a shard is worth it during a rebalance.</div>
+<div class="line">The rebalancer will move a shard when the ratio of the improvement with</div>
+<div class="line">the shard move to the improvement without crosses the threshold. This</div>
+<div class="line">is most useful with the by_disk_size strategy.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A Canopy installation ships with these strategies in the table:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_dist_rebalance_strategy</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="p">[</span> <span class="n">RECORD</span> <span class="mi">1</span> <span class="p">]</span><span class="o">------------------+---------------------------------</span>
+<span class="n">name</span>                           <span class="o">|</span> <span class="n">by_shard_count</span>
+<span class="n">default_strategy</span>               <span class="o">|</span> <span class="n">t</span>
+<span class="n">shard_cost_function</span>            <span class="o">|</span> <span class="n">canopy_shard_cost_1</span>
+<span class="n">node_capacity_function</span>         <span class="o">|</span> <span class="n">canopy_node_capacity_1</span>
+<span class="n">shard_allowed_on_node_function</span> <span class="o">|</span> <span class="n">canopy_shard_allowed_on_node_true</span>
+<span class="n">default_threshold</span>              <span class="o">|</span> <span class="mi">0</span>
+<span class="n">minimum_threshold</span>              <span class="o">|</span> <span class="mi">0</span>
+<span class="n">improvement_threshold</span>          <span class="o">|</span> <span class="mi">0</span>
+<span class="o">-</span><span class="p">[</span> <span class="n">RECORD</span> <span class="mi">2</span> <span class="p">]</span><span class="o">------------------+---------------------------------</span>
+<span class="n">name</span>                           <span class="o">|</span> <span class="n">by_disk_size</span>
+<span class="n">default_strategy</span>               <span class="o">|</span> <span class="n">f</span>
+<span class="n">shard_cost_function</span>            <span class="o">|</span> <span class="n">canopy_shard_cost_by_disk_size</span>
+<span class="n">node_capacity_function</span>         <span class="o">|</span> <span class="n">canopy_node_capacity_1</span>
+<span class="n">shard_allowed_on_node_function</span> <span class="o">|</span> <span class="n">canopy_shard_allowed_on_node_true</span>
+<span class="n">default_threshold</span>              <span class="o">|</span> <span class="mf">0.1</span>
+<span class="n">minimum_threshold</span>              <span class="o">|</span> <span class="mf">0.01</span>
+<span class="n">improvement_threshold</span>          <span class="o">|</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<p>The default strategy, <code class="docutils literal notranslate"><span class="pre">by_shard_count</span></code>, assigns every shard the same cost. Its effect is to equalize the shard count across nodes. The other predefined strategy, <code class="docutils literal notranslate"><span class="pre">by_disk_size</span></code>, assigns a cost to each shard matching its disk size in bytes plus that of the shards that are colocated with it. The disk size is calculated using <code class="docutils literal notranslate"><span class="pre">pg_total_relation_size</span></code>, so it includes indices. This strategy attempts to achieve the same disk space on every node. Note the threshold of 0.1 – it prevents unnecessary shard movement caused by insigificant differences in disk space.</p>
+</div>
+<div class="section" id="distributed-query-activity">
+<h3>Distributed Query Activity<a class="headerlink" href="#distributed-query-activity" title="Permalink to this headline"></a></h3>
+<p>In some situations, queries might get blocked on row-level locks on one of the shards on a worker node. If that happens then those queries would not show up in <a class="reference external" href="https://www.hs.net/lightdb/docs/html/view-pg-locks.html">pg_locks</a> on the Canopy coordinator node.</p>
+<p>Canopy provides special views to watch queries and locks throughout the cluster, including shard-specific queries used internally to build results for distributed queries.</p>
+<ul class="simple">
+<li><p><strong>canopy_dist_stat_activity</strong>: shows the distributed queries that are executing on all nodes. A superset of <code class="docutils literal notranslate"><span class="pre">pg_stat_activity</span></code>, usable wherever the latter is.</p></li>
+<li><p><strong>canopy_worker_stat_activity</strong>: shows queries on workers, including fragment queries against individual shards.</p></li>
+<li><p><strong>canopy_lock_waits</strong>: Blocked queries throughout the cluster.</p></li>
+</ul>
+<p>The first two views include all columns of <a class="reference external" href="https://www.hs.net/lightdb/docs/html/monitoring-stats.html#PG-STAT-ACTIVITY-VIEW">pg_stat_activity</a> plus the host/port of the worker that initiated the query and the host/port of the coordinator node of the cluster.</p>
+<p>For example, consider counting the rows in a distributed table:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- run from worker on localhost:9701</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users_table</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We can see the query appear in <code class="docutils literal notranslate"><span class="pre">canopy_dist_stat_activity</span></code>:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_dist_stat_activity</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">-</span><span class="p">[</span><span class="w"> </span><span class="nb">RECORD</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="p">]</span><span class="c1">----------+----------------------------------</span>
+<span class="n">query_hostname</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="n">localhost</span><span class="w"></span>
+<span class="n">query_hostport</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mf">9701</span><span class="w"></span>
+<span class="n">master_query_host_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">localhost</span><span class="w"></span>
+<span class="n">master_query_host_port</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mf">9701</span><span class="w"></span>
+<span class="n">transaction_number</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mf">1</span><span class="w"></span>
+<span class="n">transaction_stamp</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.691907</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">datid</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="mf">12630</span><span class="w"></span>
+<span class="n">datname</span><span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">postgres</span><span class="w"></span>
+<span class="n">pid</span><span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="mf">23723</span><span class="w"></span>
+<span class="n">usesysid</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="mf">10</span><span class="w"></span>
+<span class="n">usename</span><span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">canopy</span><span class="w"></span>
+<span class="n">application_name</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">ltsql</span><span class="w"></span>
+<span class="n">client_addr</span><span class="w">            </span><span class="o">|</span><span class="w"></span>
+<span class="n">client_hostname</span><span class="w">        </span><span class="o">|</span><span class="w"></span>
+<span class="n">client_port</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="w"></span>
+<span class="n">backend_start</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">14.419905</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">xact_start</span><span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">16.362887</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">query_start</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.682452</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">state_change</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.896546</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">wait_event_type</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w"></span>
+<span class="n">wait_event</span><span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="n">ClientRead</span><span class="w"></span>
+<span class="n">state</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="n">idle</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">transaction</span><span class="w"></span>
+<span class="n">backend_xid</span><span class="w">            </span><span class="o">|</span><span class="w"></span>
+<span class="n">backend_xmin</span><span class="w">           </span><span class="o">|</span><span class="w"></span>
+<span class="n">query</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users_table</span><span class="p">;</span><span class="w"></span>
+<span class="n">backend_type</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">backend</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This query requires information from all shards. Some of the information is in shard <code class="docutils literal notranslate"><span class="pre">users_table_102038</span></code> which happens to be stored in localhost:9700. We can see a query accessing the shard by looking at the <code class="docutils literal notranslate"><span class="pre">canopy_worker_stat_activity</span></code> view:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_worker_stat_activity</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">-</span><span class="p">[</span><span class="w"> </span><span class="nb">RECORD</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="p">]</span><span class="c1">----------+-----------------------------------------------------------------------------------------</span>
+<span class="n">query_hostname</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="n">localhost</span><span class="w"></span>
+<span class="n">query_hostport</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mf">9700</span><span class="w"></span>
+<span class="n">master_query_host_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">localhost</span><span class="w"></span>
+<span class="n">master_query_host_port</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mf">9701</span><span class="w"></span>
+<span class="n">transaction_number</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mf">1</span><span class="w"></span>
+<span class="n">transaction_stamp</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.691907</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">datid</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="mf">12630</span><span class="w"></span>
+<span class="n">datname</span><span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">postgres</span><span class="w"></span>
+<span class="n">pid</span><span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="mf">23781</span><span class="w"></span>
+<span class="n">usesysid</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="mf">10</span><span class="w"></span>
+<span class="n">usename</span><span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">canopy</span><span class="w"></span>
+<span class="n">application_name</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">canopy</span><span class="w"></span>
+<span class="n">client_addr</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="o">::</span><span class="mf">1</span><span class="w"></span>
+<span class="n">client_hostname</span><span class="w">        </span><span class="o">|</span><span class="w"></span>
+<span class="n">client_port</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="mf">51773</span><span class="w"></span>
+<span class="n">backend_start</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.75839</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">xact_start</span><span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.84112</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">query_start</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.867446</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">state_change</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="mf">2018</span><span class="o">-</span><span class="mf">10</span><span class="o">-</span><span class="mf">05</span><span class="w"> </span><span class="mf">13</span><span class="p">:</span><span class="mf">27</span><span class="p">:</span><span class="mf">20.869889</span><span class="o">+</span><span class="mf">03</span><span class="w"></span>
+<span class="n">wait_event_type</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w"></span>
+<span class="n">wait_event</span><span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="n">ClientRead</span><span class="w"></span>
+<span class="n">state</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="n">idle</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">transaction</span><span class="w"></span>
+<span class="n">backend_xid</span><span class="w">            </span><span class="o">|</span><span class="w"></span>
+<span class="n">backend_xmin</span><span class="w">           </span><span class="o">|</span><span class="w"></span>
+<span class="n">query</span><span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="k">COPY</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users_table_102038</span><span class="w"> </span><span class="n">users_table</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">STDOUT</span><span class="w"></span>
+<span class="n">backend_type</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">backend</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">query</span></code> field shows data being copied out of the shard to be counted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a router query (e.g. single-tenant in a multi-tenant application, <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">table</span> <span class="pre">WHERE</span> <span class="pre">tenant_id</span> <span class="pre">=</span> <span class="pre">X</span></code>) is executed without a transaction block, then canopy_query_host_name and canopy_query_host_port columns will be NULL in canopy_worker_stat_activity.</p>
+</div>
+<p>Here are examples of useful queries you can build using
+<code class="docutils literal notranslate"><span class="pre">canopy_worker_stat_activity</span></code>:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- active queries&#39; wait events on a certain node</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event_type</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event</span><span class="w"></span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_worker_stat_activity</span><span class="w"></span>
+<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">query_hostname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;xxxx&#39;</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">-- active queries&#39; top wait events</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">wait_event</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event_type</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_worker_stat_activity</span><span class="w"></span>
+<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="w"></span>
+<span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">wait_event</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"></span>
+<span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">desc</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">-- total internal connections generated per node by Canopy</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">query_hostname</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_worker_stat_activity</span><span class="w"></span>
+<span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">query_hostname</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">-- total internal active connections generated per node by Canopy</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">query_hostname</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_worker_stat_activity</span><span class="w"></span>
+<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="w"></span>
+<span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">query_hostname</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The next view is <code class="docutils literal notranslate"><span class="pre">canopy_lock_waits</span></code>. To see how it works, we can generate a locking situation manually. First we’ll set up a test table from the coordinator:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">AS</span><span class="w"></span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">10</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">create_distributed_table</span><span class="p">(</span><span class="s1">&#39;numbers&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;i&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then, using two sessions on the coordinator, we can run this sequence of statements:</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="c1">-- session 1                           -- session 2</span>
+<span class="c1">-------------------------------------  -------------------------------------</span>
+<span class="k">BEGIN</span><span class="p">;</span><span class="w"></span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">                                       </span><span class="k">BEGIN</span><span class="p">;</span><span class="w"></span>
+<span class="w">                                       </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">                                       </span><span class="c1">-- (this blocks)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">canopy_lock_waits</span></code> view shows the situation.</p>
+<div class="highlight-postgres notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">canopy_lock_waits</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">-</span><span class="p">[</span><span class="w"> </span><span class="nb">RECORD</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="p">]</span><span class="c1">-------------------------+----------------------------------------</span>
+<span class="n">waiting_pid</span><span class="w">                           </span><span class="o">|</span><span class="w"> </span><span class="mf">88624</span><span class="w"></span>
+<span class="n">blocking_pid</span><span class="w">                          </span><span class="o">|</span><span class="w"> </span><span class="mf">88615</span><span class="w"></span>
+<span class="n">blocked_statement</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"></span>
+<span class="n">current_statement_in_blocking_process</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"></span>
+<span class="n">waiting_node_id</span><span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="mf">0</span><span class="w"></span>
+<span class="n">blocking_node_id</span><span class="w">                      </span><span class="o">|</span><span class="w"> </span><span class="mf">0</span><span class="w"></span>
+<span class="n">waiting_node_name</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="n">coordinator_host</span><span class="w"></span>
+<span class="n">blocking_node_name</span><span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">coordinator_host</span><span class="w"></span>
+<span class="n">waiting_node_port</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="mf">5432</span><span class="w"></span>
+<span class="n">blocking_node_port</span><span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="mf">5432</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In this example the queries originated on the coordinator, but the view can also list locks between queries originating on workers.</p>
+</div>
+</div>
+</div>
+
+
+
+
+           </div>
+          </div>
+        </div>
+        <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_udf.html" class="btn btn-neutral float-left" title="Canopy Utility Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_guc.html" class="btn btn-neutral float-right" title="Configuration Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Hundsun Technologies Inc.</p>
+  </div>
+
+   
+
+</footer>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-32858865-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-32858865-1', {
+          'anonymize_ip': false,
+      });
+    </script>
+   
+
+  
+  <script type="text/javascript">
+    window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+    heap.load("4002524638");
+  </script>
+
+  
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js'></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      /* Uses global window.g_cookieConsentId defined in the <head> */
+
+      var consentValue = 'Consented';
+
+      var clickConsent = function () {
+        if ($("#consentBox").is(":visible")) {
+          if (typeof(window.yett) == 'object' &&
+              typeof(window.yett.unblock) == 'function') {
+            window.yett.unblock();
+          } else {
+            console.log("clickConsent: Unable to access window.yett.unblock()");
+          }
+          // "slideUp" means "hide," it is not a direction of movement
+          $("#consentBox").slideUp("linear");
+          $.cookie(window.g_cookieConsentId, consentValue, {
+            expires: 365,
+            path: '/'
+          });
+          if (typeof(ga) == 'function') {
+            ga('set', 'allowAdFeatures', true);
+            ga('send', 'event', 'cookie consent', 'accept', window.location.href);
+          } else {
+            console.log("clickConsent: Unable to access ga()");
+          }
+        }
+      };
+
+      // continuing to interact with the page consents to cookies
+      $("a:not(#cookiesLink), button, iframe, input, [data-toggle*='wy-nav-top'], [data-toggle*='rst-current-version']").on(
+        "click", clickConsent
+      );
+
+      if ($.cookie(window.g_cookieConsentId) != consentValue) {
+        // "slideDown" means "show," it's not a direction of movement
+        $("#consentBox").slideDown("linear");
+      };
+    });
+  </script>
+
+</body>
+</html>
